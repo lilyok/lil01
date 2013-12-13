@@ -2,18 +2,14 @@ package com.example.lil01;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
+import android.graphics.*;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.Toast;
+import android.widget.*;
 
 
 import java.util.ArrayList;
@@ -31,29 +27,27 @@ public class LilActivity extends Activity {
         myview = new MyView(this);
 
         setContentView(R.layout.main);
-        LinearLayout ll = (LinearLayout)findViewById(R.id.ll);
-
+        TableLayout gl = (TableLayout)findViewById(R.id.gl);
         myview.setBackgroundColor(Color.BLACK);
         myview.requestFocus();
-        ll.addView(myview);
+        gl.addView(myview);
     }
 
-    public void startBtnClick(View view) throws InterruptedException {
+    public void startBtnClick(View view){
         // выводим сообщение
         Toast.makeText(this, "Зачем вы нажали?", Toast.LENGTH_SHORT).show();
         Display display = getWindowManager().getDefaultDisplay();
         DisplayMetrics metricsB = new DisplayMetrics();
         display.getMetrics(metricsB);
-        myview.Start();
-    //    myview.invalidate();
-
+        myview.start();
     }
 
+
+    public void wizardBtnClick(View view){
+        myview.wizard();
+
+    }
 }
-
-
-
-
 
 class Point{
     float x;
@@ -65,10 +59,14 @@ class Point{
 }
 
 class MyView extends View {
+    Bitmap myWizard;
 
     Paint paint;
     ArrayList<Point> points = new ArrayList<Point>();
+    float xWiz;
+    float yWiz;
     boolean isStart = false;
+    boolean isWizard = false;
 
     public MyView(Context context) {
         super(context);
@@ -80,27 +78,39 @@ class MyView extends View {
         paint.setAntiAlias(true);
         paint.setStyle(Paint.Style.FILL);
         paint.setStrokeWidth(5);
-    }
+        myWizard = BitmapFactory.decodeResource(getResources(), R.drawable.wizard);
 
+    }
 
     public boolean onTouchEvent(MotionEvent event) {
         int action = event.getAction();
         switch(action) {
             case MotionEvent.ACTION_DOWN:
                 Log.i("MyTag", "ACTION_DOWN");
-                points.add(new Point(event.getX(), event.getY()));
+                xWiz = event.getX();
+                yWiz = event.getY();
+                if (!isWizard)
+                    points.add(new Point(xWiz, yWiz));
                 break;
             case MotionEvent.ACTION_MOVE:
                 Log.i("MyTag", "ACTION_MOVE");
-                points.add(new Point(event.getX(), event.getY()));
+                xWiz = event.getX();
+                yWiz = event.getY();
+                if (!isWizard)
+                    points.add(new Point(xWiz, yWiz));
                 break;
             case MotionEvent.ACTION_UP:
                 Log.i("MyTag", "ACTION_UP");
-                points.add(null);
+                if (isWizard) {
+                    xWiz = event.getX();
+                    yWiz = event.getY();
+                }
+                else
+                    points.add(null);
+
                 break;
         }
 
-  //      invalidate();
         return true;
     }
 
@@ -110,7 +120,7 @@ class MyView extends View {
         int step = 0;
         invalidate();
 
-        //invalidate();
+
         if (isStart){
             step = 2;
         }else{
@@ -130,21 +140,19 @@ class MyView extends View {
             }
             currPoint = p;
         }
-//            invalidate();
-       // } while (dm != null &&isIn);
-
+        if (isWizard)
+            canvas.drawBitmap(myWizard, xWiz, yWiz, null);
     }
 
 
-    public void Attack(){
-        for(Point p : points){
-            if (p != null){
-                p.x = p.x+2;
-            }
-        }
-    }
-
-    public void Start() {
+    public void start() {
         isStart = !isStart;
+        if (isStart) isWizard =false;
+    }
+
+    public void wizard() {
+        if (!isStart){
+            isWizard = !isWizard;
+        }
     }
 }
