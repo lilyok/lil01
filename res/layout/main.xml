@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:id="@+id/gl"
+              android:visibility="visible"
+              android:stretchColumns="0, 1"
+              android:background="#ffffff">
+
+    <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
+        <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/wizardBtn"
+                    android:background="@drawable/wizard" android:onClick="wizardBtnClick"
+                    android:enabled="true" android:visibility="visible"
+                    android:contentDescription="aaa" android:layout_column="0" android:layout_gravity="left"/>
+        <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Start"
+                android:id="@+id/startBtn" android:onClick="startBtnClick"
+                android:enabled="true" android:visibility="visible" android:focusable="false"
+                android:layout_column="1" android:layout_gravity="right"/>
+    </TableRow>
+</TableLayout>
+
