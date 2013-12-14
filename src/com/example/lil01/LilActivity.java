@@ -36,6 +36,7 @@ public class LilActivity extends Activity {
     public void startBtnClick(View view){
         // выводим сообщение
         Toast.makeText(this, "Зачем вы нажали?", Toast.LENGTH_SHORT).show();
+
         Display display = getWindowManager().getDefaultDisplay();
         DisplayMetrics metricsB = new DisplayMetrics();
         display.getMetrics(metricsB);
@@ -44,25 +45,46 @@ public class LilActivity extends Activity {
 
 
     public void wizardBtnClick(View view){
-        myview.wizard();
+       // Toast.makeText(this, Integer.toString(view.getLeft()), Toast.LENGTH_SHORT).show();
+
+        myview.wizard(view.getLeft(), view.getTop());
 
     }
 }
 
 class Point{
+    int c;
+    int id;
     float x;
     float y;
+
     public Point(float x, float y){
         this.x=x;
         this.y=y;
+        this.c = Color.WHITE;
+        this.id = -1;
     }
+
+    public Point(float x, float y, int c, int id){
+        this.x=x;
+        this.y=y;
+        this.c = c;
+        this.id = id;
+    }
+
 }
 
 class MyView extends View {
     Bitmap myWizard;
 
     Paint paint;
+
     ArrayList<Point> points = new ArrayList<Point>();
+    int legCount = 0;
+    ArrayList<Float> xc;
+    ArrayList<Float> yc;
+    int phi = 1;
+
     float xWiz;
     float yWiz;
     boolean isStart = false;
@@ -80,6 +102,19 @@ class MyView extends View {
         paint.setStrokeWidth(5);
         myWizard = BitmapFactory.decodeResource(getResources(), R.drawable.wizard);
 
+        xc = new ArrayList<Float>();
+        yc = new ArrayList<Float>();
+
+    }
+
+    public void fillSelectPoint(int color){
+
+        for (Point p: points){
+            if (p != null && Math.abs(p.x - xWiz)< 5 && Math.abs(p.y - yWiz)< 5){
+                p.c = color;
+                p.id = legCount;
+            }
+        }
     }
 
     public boolean onTouchEvent(MotionEvent event) {
@@ -91,6 +126,8 @@ class MyView extends View {
                 yWiz = event.getY();
                 if (!isWizard)
                     points.add(new Point(xWiz, yWiz));
+                else
+                    fillSelectPoint(Color.YELLOW);
                 break;
             case MotionEvent.ACTION_MOVE:
                 Log.i("MyTag", "ACTION_MOVE");
@@ -98,6 +135,8 @@ class MyView extends View {
                 yWiz = event.getY();
                 if (!isWizard)
                     points.add(new Point(xWiz, yWiz));
+                else
+                    fillSelectPoint(Color.YELLOW);
                 break;
             case MotionEvent.ACTION_UP:
                 Log.i("MyTag", "ACTION_UP");
@@ -117,9 +156,9 @@ class MyView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         Point currPoint = null;
-        int step = 0;
+        Point pres = null;
+        int step;
         invalidate();
-
 
         if (isStart){
             step = 2;
@@ -127,21 +166,57 @@ class MyView extends View {
             step = 0;
         }
 
+        for (Float c:xc){
+            c += step;
+        }
+
         for(Point p : points){
             if (p != null){
                 p.x = p.x+step;
+
+                pres = rotatePoints(p);
                 if (currPoint != null){
                     if (p.x<canvas.getWidth()){
-                         canvas.drawLine(currPoint.x, currPoint.y, p.x, p.y, paint);
+                         paint.setColor(currPoint.c);
+                         canvas.drawLine(currPoint.x, currPoint.y, pres.x, pres.y, paint);
                     }else{
                         isStart=false;
                     }
                 }
             }
-            currPoint = p;
+            currPoint = pres;
         }
+
+//        //Rotate
+//        if (isStart)
+//            for(Point p : points){
+//                if ((p != null)&&(p.id > -1)&&(xc.size() > 0)){
+//
+//                    float d = (float) Math.sqrt(Math.pow(p.x - xc.get(p.id), 2) + Math.pow(p.y - yc.get(p.id), 2));
+//                    p.x = (float) (p.x+d*Math.sin(0.3));
+//                    p.y = (float) (p.y-d*Math.cos(0.3));
+//                }
+//            }
+
+
         if (isWizard)
             canvas.drawBitmap(myWizard, xWiz, yWiz, null);
+    }
+
+    public Point rotatePoints(Point p){
+        Point pres = new Point(p.x, p.y, p.c, p.id);
+        if (isStart&&(p.id > -1)&&(xc.size() > 0)){
+            float dx = p.x - xc.get(p.id);
+            float dy = p.y - yc.get(p.id);
+            float dxn = (float) (dx * Math.cos(phi) - dy * Math.sin(phi));
+            float dyn = (float) (dx * Math.sin(phi) + dy * Math.cos(phi));
+
+//            float d = (float) Math.sqrt(Math.pow(p.x - xc.get(p.id), 2) + Math.pow(p.y - yc.get(p.id), 2));
+            pres.x = xc.get(p.id)+dxn;
+            pres.y = yc.get(p.id)+dyn;
+        }
+
+        return pres;
     }
 
 
@@ -150,9 +225,18 @@ class MyView extends View {
         if (isStart) isWizard =false;
     }
 
-    public void wizard() {
+    public void wizard(int left, int top) {
         if (!isStart){
             isWizard = !isWizard;
+            if (isWizard){
+                xWiz = left;
+                yWiz = top;
+            }else{
+                xc.add(xWiz);
+                yc.add(yWiz);
+                fillSelectPoint(Color.RED);
+                legCount += 1;
+            }
         }
     }
 }
