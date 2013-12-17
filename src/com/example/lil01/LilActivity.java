@@ -3,6 +3,7 @@ package com.example.lil01;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.*;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -10,20 +11,26 @@ import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.*;
+import hero.*;
 
 
 import java.util.ArrayList;
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.List;
 
-import static java.lang.Thread.sleep;
 
 public class LilActivity extends Activity {
     MyView myview;
+    RadioButton brbtn;
+    RadioButton lrbtn;
     /**
      * Called when the activity is first created.
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         myview = new MyView(this);
 
         setContentView(R.layout.main);
@@ -31,11 +38,14 @@ public class LilActivity extends Activity {
         myview.setBackgroundColor(Color.BLACK);
         myview.requestFocus();
         gl.addView(myview);
+
+        brbtn = (RadioButton)findViewById(R.id.rBody);
+        lrbtn = (RadioButton)findViewById(R.id.rLegs);
     }
 
     public void startBtnClick(View view){
         // выводим сообщение
-        Toast.makeText(this, "Зачем вы нажали?", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this, "Зачем вы нажали?", Toast.LENGTH_SHORT).show();
 
         Display display = getWindowManager().getDefaultDisplay();
         DisplayMetrics metricsB = new DisplayMetrics();
@@ -47,48 +57,36 @@ public class LilActivity extends Activity {
     public void wizardBtnClick(View view){
        // Toast.makeText(this, Integer.toString(view.getLeft()), Toast.LENGTH_SHORT).show();
 
-        myview.wizard(view.getLeft(), view.getTop());
+        myview.wizard();
 
     }
-}
 
-class Point{
-    int c;
-    int id;
-    float x;
-    float y;
+    public void legsRbtnClick(View view){
 
-    public Point(float x, float y){
-        this.x=x;
-        this.y=y;
-        this.c = Color.WHITE;
-        this.id = -1;
+        if (lrbtn.isChecked())
+            brbtn.setChecked(false);
+
+        myview.isLegs = true;
+
     }
 
-    public Point(float x, float y, int c, int id){
-        this.x=x;
-        this.y=y;
-        this.c = c;
-        this.id = id;
-    }
+    public void bodyRbtnClick(View view){
+        if (brbtn.isChecked())
+            lrbtn.setChecked(false);
 
+        myview.isLegs = false;
+    }
 }
 
 class MyView extends View {
     Bitmap myWizard;
-
     Paint paint;
 
-    ArrayList<Point> points = new ArrayList<Point>();
-    int legCount = 0;
-    ArrayList<Float> xc;
-    ArrayList<Float> yc;
-    int phi = 1;
-
-    float xWiz;
-    float yWiz;
+    Deque<Hero> hero;
+    boolean isLegs = false;
     boolean isStart = false;
     boolean isWizard = false;
+
 
     public MyView(Context context) {
         super(context);
@@ -102,19 +100,7 @@ class MyView extends View {
         paint.setStrokeWidth(5);
         myWizard = BitmapFactory.decodeResource(getResources(), R.drawable.wizard);
 
-        xc = new ArrayList<Float>();
-        yc = new ArrayList<Float>();
-
-    }
-
-    public void fillSelectPoint(int color){
-
-        for (Point p: points){
-            if (p != null && Math.abs(p.x - xWiz)< 5 && Math.abs(p.y - yWiz)< 5){
-                p.c = color;
-                p.id = legCount;
-            }
-        }
+        hero = new LinkedList<Hero>();
     }
 
     public boolean onTouchEvent(MotionEvent event) {
@@ -122,30 +108,37 @@ class MyView extends View {
         switch(action) {
             case MotionEvent.ACTION_DOWN:
                 Log.i("MyTag", "ACTION_DOWN");
-                xWiz = event.getX();
-                yWiz = event.getY();
+
                 if (!isWizard)
-                    points.add(new Point(xWiz, yWiz));
-                else
-                    fillSelectPoint(Color.YELLOW);
+                    hero.add(new Hero());
+                isWizard = true;
+                if (isLegs){
+                    hero.getLast().addPointToNewLeg(event.getX(), event.getY());
+                }else{
+                    hero.getLast().addPointToBody(event.getX(), event.getY());
+                }
+
                 break;
             case MotionEvent.ACTION_MOVE:
                 Log.i("MyTag", "ACTION_MOVE");
-                xWiz = event.getX();
-                yWiz = event.getY();
+
                 if (!isWizard)
-                    points.add(new Point(xWiz, yWiz));
-                else
-                    fillSelectPoint(Color.YELLOW);
+                    hero.add(new Hero());
+                isWizard = true;
+                if (isLegs){
+                    hero.getLast().addPointToLastLeg(event.getX(), event.getY());
+                }else{
+                    hero.getLast().addPointToBody(event.getX(), event.getY());
+                }
+
                 break;
             case MotionEvent.ACTION_UP:
                 Log.i("MyTag", "ACTION_UP");
-                if (isWizard) {
-                    xWiz = event.getX();
-                    yWiz = event.getY();
+                if (isLegs){
+                    hero.getLast().addPointToLastLeg(null);
+                }else{
+                    hero.getLast().addPointToBody(null);
                 }
-                else
-                    points.add(null);
 
                 break;
         }
@@ -155,69 +148,33 @@ class MyView extends View {
 
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        Point currPoint = null;
-        Point pres = null;
-        int step;
+        hero.Point currPoint = null;
         invalidate();
 
         if (isStart){
-            step = 2;
-        }else{
-            step = 0;
+            for(Hero h: hero)
+                h.move(2, 0.05);
         }
 
-        for (Float c:xc){
-            c += step;
-        }
+        for(Hero h: hero)
+            for (hero.Point p:h.getPoints()){
+                if (p != null){
 
-        for(Point p : points){
-            if (p != null){
-                p.x = p.x+step;
-
-                pres = rotatePoints(p);
-                if (currPoint != null){
-                    if (p.x<canvas.getWidth()){
-                         paint.setColor(currPoint.c);
-                         canvas.drawLine(currPoint.x, currPoint.y, pres.x, pres.y, paint);
-                    }else{
-                        isStart=false;
+                    if (currPoint != null){
+                        if (p.x<canvas.getWidth()){
+                            paint.setColor(currPoint.c);
+                            canvas.drawLine(currPoint.fx(), currPoint.fy(), p.fx(), p.fy(), paint);
+                        }else{
+                            isStart=false;
+                        }
                     }
                 }
+                currPoint = p;
             }
-            currPoint = pres;
-        }
 
-//        //Rotate
-//        if (isStart)
-//            for(Point p : points){
-//                if ((p != null)&&(p.id > -1)&&(xc.size() > 0)){
-//
-//                    float d = (float) Math.sqrt(Math.pow(p.x - xc.get(p.id), 2) + Math.pow(p.y - yc.get(p.id), 2));
-//                    p.x = (float) (p.x+d*Math.sin(0.3));
-//                    p.y = (float) (p.y-d*Math.cos(0.3));
-//                }
-//            }
-
-
-        if (isWizard)
-            canvas.drawBitmap(myWizard, xWiz, yWiz, null);
     }
 
-    public Point rotatePoints(Point p){
-        Point pres = new Point(p.x, p.y, p.c, p.id);
-        if (isStart&&(p.id > -1)&&(xc.size() > 0)){
-            float dx = p.x - xc.get(p.id);
-            float dy = p.y - yc.get(p.id);
-            float dxn = (float) (dx * Math.cos(phi) - dy * Math.sin(phi));
-            float dyn = (float) (dx * Math.sin(phi) + dy * Math.cos(phi));
 
-//            float d = (float) Math.sqrt(Math.pow(p.x - xc.get(p.id), 2) + Math.pow(p.y - yc.get(p.id), 2));
-            pres.x = xc.get(p.id)+dxn;
-            pres.y = yc.get(p.id)+dyn;
-        }
-
-        return pres;
-    }
 
 
     public void start() {
@@ -225,18 +182,7 @@ class MyView extends View {
         if (isStart) isWizard =false;
     }
 
-    public void wizard(int left, int top) {
-        if (!isStart){
-            isWizard = !isWizard;
-            if (isWizard){
-                xWiz = left;
-                yWiz = top;
-            }else{
-                xc.add(xWiz);
-                yc.add(yWiz);
-                fillSelectPoint(Color.RED);
-                legCount += 1;
-            }
-        }
+    public void wizard() {
+        isWizard = false;
     }
 }
