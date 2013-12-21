@@ -1,29 +1,29 @@
-package hero;
+package geometry;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Figure{
+public class Figure {
     private ArrayList<Point> fig;
 
-    public Figure(){
+    public Figure() {
         fig = new ArrayList<Point>();
     }
 
-    public Figure(Point p){
+    public Figure(Point p) {
         fig = new ArrayList<Point>();
         fig.add(p);
     }
 
-    public Figure(ArrayList<Point> ps){
+    public Figure(ArrayList<Point> ps) {
         fig = ps;
     }
 
-    public void add(Point p){
+    public void add(Point p) {
         fig.add(p);
     }
 
-    public Point get(int i){
+    public Point get(int i) {
         return fig.get(i);
     }
 
@@ -31,9 +31,9 @@ public class Figure{
         return fig;
     }
 
-    public List<Point> clonePoints(){
-        List <Point> res = new ArrayList<Point>();
-        for (Point p: fig){
+    public List<Point> clonePoints() {
+        List<Point> res = new ArrayList<Point>();
+        for (Point p : fig) {
             if (p != null)
                 res.add(new Point(p.x, p.y, p.c));
             else
@@ -42,9 +42,9 @@ public class Figure{
         return res;
     }
 
-    public List<Point> rotatePoints(double phi){
+    public List<Point> rotatePoints(double phi) {
         List<Point> res = new ArrayList<Point>();
-        for (Point p: fig)
+        for (Point p : fig)
             if (p != null)
                 res.add(rotatePoint(p, fig.get(0).x, fig.get(0).y, phi));
             else
@@ -53,17 +53,17 @@ public class Figure{
     }
 
 
-    private Point rotatePoint(Point p, double cx, double cy, double phi){
+    private Point rotatePoint(Point p, double cx, double cy, double phi) {
         Point pres = new Point(p.x, p.y, p.c);
 
         double dx = p.x - cx;
         double dy = p.y - cy;
 
         double dxn = (dx * Math.cos(phi) - dy * Math.sin(phi));
-        double dyn =  (dx * Math.sin(phi) + dy * Math.cos(phi));
+        double dyn = (dx * Math.sin(phi) + dy * Math.cos(phi));
 
-        pres.x = cx+dxn;
-        pres.y = cy+dyn;
+        pres.x = cx + dxn;
+        pres.y = cy + dyn;
 
         return pres;
     }

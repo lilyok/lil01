@@ -3,7 +3,6 @@ package com.example.lil01;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.*;
-import android.graphics.Point;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -11,19 +10,19 @@ import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.*;
-import hero.*;
+import characters.*;
+import geometry.Point;
 
 
-import java.util.ArrayList;
 import java.util.Deque;
 import java.util.LinkedList;
-import java.util.List;
 
 
 public class LilActivity extends Activity {
     MyView myview;
     RadioButton brbtn;
     RadioButton lrbtn;
+
     /**
      * Called when the activity is first created.
      */
@@ -34,16 +33,16 @@ public class LilActivity extends Activity {
         myview = new MyView(this);
 
         setContentView(R.layout.main);
-        TableLayout gl = (TableLayout)findViewById(R.id.gl);
+        TableLayout gl = (TableLayout) findViewById(R.id.gl);
         myview.setBackgroundColor(Color.BLACK);
         myview.requestFocus();
         gl.addView(myview);
 
-        brbtn = (RadioButton)findViewById(R.id.rBody);
-        lrbtn = (RadioButton)findViewById(R.id.rLegs);
+        brbtn = (RadioButton) findViewById(R.id.rBody);
+        lrbtn = (RadioButton) findViewById(R.id.rLegs);
     }
 
-    public void startBtnClick(View view){
+    public void startBtnClick(View view) {
         // выводим сообщение
 //        Toast.makeText(this, "Зачем вы нажали?", Toast.LENGTH_SHORT).show();
 
@@ -54,14 +53,14 @@ public class LilActivity extends Activity {
     }
 
 
-    public void wizardBtnClick(View view){
-       // Toast.makeText(this, Integer.toString(view.getLeft()), Toast.LENGTH_SHORT).show();
+    public void wizardBtnClick(View view) {
+        // Toast.makeText(this, Integer.toString(view.getLeft()), Toast.LENGTH_SHORT).show();
 
         myview.wizard();
 
     }
 
-    public void legsRbtnClick(View view){
+    public void legsRbtnClick(View view) {
 
         if (lrbtn.isChecked())
             brbtn.setChecked(false);
@@ -70,7 +69,7 @@ public class LilActivity extends Activity {
 
     }
 
-    public void bodyRbtnClick(View view){
+    public void bodyRbtnClick(View view) {
         if (brbtn.isChecked())
             lrbtn.setChecked(false);
 
@@ -82,10 +81,11 @@ class MyView extends View {
     Bitmap myWizard;
     Paint paint;
 
-    Deque<Hero> hero;
-    boolean isLegs = false;
-    boolean isStart = false;
-    boolean isWizard = false;
+    private Deque<Hero> hero;
+    private Enemy enemy;
+    public boolean isLegs = false;
+    private boolean isStart = false;
+    private boolean isWizard = false;
 
 
     public MyView(Context context) {
@@ -101,20 +101,22 @@ class MyView extends View {
         myWizard = BitmapFactory.decodeResource(getResources(), R.drawable.wizard);
 
         hero = new LinkedList<Hero>();
+        enemy = new Enemy(BitmapFactory.decodeResource(getResources(), R.drawable.enemy1));
+
     }
 
     public boolean onTouchEvent(MotionEvent event) {
         int action = event.getAction();
-        switch(action) {
+        switch (action) {
             case MotionEvent.ACTION_DOWN:
                 Log.i("MyTag", "ACTION_DOWN");
 
                 if (!isWizard)
                     hero.add(new Hero());
                 isWizard = true;
-                if (isLegs){
+                if (isLegs) {
                     hero.getLast().addPointToNewLeg(event.getX(), event.getY());
-                }else{
+                } else {
                     hero.getLast().addPointToBody(event.getX(), event.getY());
                 }
 
@@ -125,18 +127,18 @@ class MyView extends View {
                 if (!isWizard)
                     hero.add(new Hero());
                 isWizard = true;
-                if (isLegs){
+                if (isLegs) {
                     hero.getLast().addPointToLastLeg(event.getX(), event.getY());
-                }else{
+                } else {
                     hero.getLast().addPointToBody(event.getX(), event.getY());
                 }
 
                 break;
             case MotionEvent.ACTION_UP:
                 Log.i("MyTag", "ACTION_UP");
-                if (isLegs){
+                if (isLegs) {
                     hero.getLast().addPointToLastLeg(null);
-                }else{
+                } else {
                     hero.getLast().addPointToBody(null);
                 }
 
@@ -148,38 +150,23 @@ class MyView extends View {
 
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        hero.Point currPoint = null;
         invalidate();
 
-        if (isStart){
-            for(Hero h: hero)
-                h.move(2, 0.05);
-        }
+        for (Hero h : hero)
+            if (isStart)
+                h.move(2, 0.05, canvas);
+            else
+                h.move(0, 0, canvas);
 
-        for(Hero h: hero)
-            for (hero.Point p:h.getPoints()){
-                if (p != null){
-
-                    if (currPoint != null){
-                        if (p.x<canvas.getWidth()){
-                            paint.setColor(currPoint.c);
-                            canvas.drawLine(currPoint.fx(), currPoint.fy(), p.fx(), p.fy(), paint);
-                        }else{
-                            isStart=false;
-                        }
-                    }
-                }
-                currPoint = p;
-            }
-
+        if (isStart)
+            enemy.move(2, canvas);
+        else
+            enemy.move(0, canvas);
     }
-
-
 
 
     public void start() {
         isStart = !isStart;
-        if (isStart) isWizard =false;
     }
 
     public void wizard() {
