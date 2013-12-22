@@ -67,4 +67,15 @@ public class Figure {
 
         return pres;
     }
+
+    public double getMostRemoteFromStartPoint(){
+        Point startPoint = fig.get(0);
+        double res = 0;
+        for (Point p: fig){
+            double length = startPoint.geLength(p);
+            if ( length > res)
+                res = length;
+        }
+        return res;
+    }
 }

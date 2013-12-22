@@ -18,6 +18,10 @@ public class Hero {
     private Paint paint;
     private boolean isRight = true;
 
+    private double front = 0;
+    private double bottom = 0;
+    private double top = 0;
+
     public Hero() {
         body = new Figure();
         legs = new ArrayList<Figure>();
@@ -31,27 +35,56 @@ public class Hero {
 
     public void addPointToBody(Point p) {
         body.add(p);
-    }
-
-    public void addPointToNewLeg(Point p) {
-        legs.add(new Figure(p));
-    }
-
-    public void addPointToLastLeg(Point p) {
-        legs.get(legs.size() - 1).add(p);
-    }
-
-    public void addPointToLastLeg(double x, double y) {
-        legs.get(legs.size() - 1).add(new Point(x, y, Color.rgb(250, 0, 250)));
+        if (p != null)
+            setBounds(p.x, p.y);
     }
 
     public void addPointToBody(double x, double y) {
         body.add(new Point(x, y, Color.rgb(0, 250, 250)));
+        setBounds(x, y);
+    }
+
+    public void addPointToNewLeg(Point p) {
+        legs.add(new Figure(p));
+        if (p != null)
+            setBounds(0, p.y);
     }
 
     public void addPointToNewLeg(double x, double y) {
         legs.add(new Figure(new Point(x, y, Color.rgb(250, 0, 250))));
+        setBounds(0, y);
+
     }
+
+    public void addPointToLastLeg(Point p) {
+        Figure last = legs.get(legs.size() - 1);
+        last.add(p);
+        if (p != null)
+            setBounds(0, last.get(0).y + last.getMostRemoteFromStartPoint());
+    }
+
+    public void addPointToLastLeg(double x, double y) {
+        Figure last = legs.get(legs.size() - 1);
+        last.add(new Point(x, y, Color.rgb(250, 0, 250)));
+        setBounds(0, last.get(0).y + last.getMostRemoteFromStartPoint());
+    }
+
+
+    private void setBounds(double x, double y) {
+        if (y > bottom) bottom = y;
+        if (y < top) top = y;
+        if (x > front) front = x;
+    }
+
+    public List<Double> getBounds() {
+        List <Double> res = new ArrayList<Double>(){{
+            add(front);
+            add(top);
+            add(bottom);
+        }};
+        return res;
+    }
+
 
     public void move(int step, double phi, Canvas canvas) {
         this.step += step;
@@ -106,4 +139,7 @@ public class Hero {
         return res;
     }
 
+    public int getStep() {
+        return step;
+    }
 }

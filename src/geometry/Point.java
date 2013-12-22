@@ -26,4 +26,8 @@ public class Point {
     public float fy() {
         return (float) y;
     }
+
+    public double geLength(Point nextPoint){
+      return (nextPoint.x - this.x)*(nextPoint.x - this.x)+(nextPoint.y - this.y)*(nextPoint.y - this.y);
+    }
 }

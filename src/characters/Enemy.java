@@ -1,19 +1,47 @@
 package characters;
 
 import android.graphics.*;
-import com.example.lil01.R;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class Enemy extends Paint {
     private Bitmap bmp;
+    private int shift = 0;
     private int step = 0;
     private int numFrame = 0;
     private final int COL_COUNT = 3;
     private int width = 0;
     private int height = 0;
+    private int top = 0;
+    private int bottom = 0;
 
+
+    public int getShift() {
+        return shift;
+    }
+
+    public int getStep() {
+        return step;
+    }
+
+    public void setStep(int step) {
+        this.step = step;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public int getBottom() {
+        return bottom;
+    }
+
+    public int getTop() {
+        return top;
+    }
+
+    public void setTop(int top) {
+        this.top = top * (height * 3 + 3);
+        this.bottom = this.top + height * 3;
+    }
     private Rect src = new Rect();
     private Rect dst = new Rect();
 
@@ -23,14 +51,14 @@ public class Enemy extends Paint {
         height = bmp.getHeight();
     }
 
-    public void move(int step, Canvas canvas) {
+    public void move(boolean isMoving, Canvas canvas) {
         int srcX = numFrame * width;
         src = new Rect(srcX, 0, srcX + width, height);
         int canvasWidth = canvas.getWidth();
-        dst = new Rect(canvasWidth - this.step, 10, canvasWidth - this.step + width, 10 + height);
+        dst = new Rect(canvasWidth - this.shift, top, canvasWidth - this.shift + 3 * width, bottom);
 
-        if (step > 0) {
-            this.step += step;
+        if (isMoving) {
+            this.shift += step;
             numFrame = ++numFrame % 3;
         }
 
