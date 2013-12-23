@@ -20,7 +20,7 @@ public class Hero {
 
     private double front = 0;
     private double bottom = 0;
-    private double top = 0;
+    private double top = 10000;
 
     public Hero() {
         body = new Figure();
@@ -85,6 +85,17 @@ public class Hero {
         return res;
     }
 
+    public double getFront() {
+        return front;
+    }
+
+    public double getBottom() {
+        return bottom;
+    }
+
+    public double getTop() {
+        return top;
+    }
 
     public void move(int step, double phi, Canvas canvas) {
         this.step += step;

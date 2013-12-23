@@ -13,10 +13,7 @@ import android.widget.*;
 import characters.*;
 
 
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.Random;
+import java.util.*;
 
 
 public class LilActivity extends Activity {
@@ -89,6 +86,8 @@ class MyView extends View {
 
     private Deque<Hero> hero;
     private Deque<Enemy> enemy;
+    Map<Hero, Enemy> rival = new HashMap<Hero, Enemy>();
+
     public boolean isLegs = false;
     private boolean isStart = false;
     private boolean isWizard = false;
@@ -114,7 +113,7 @@ class MyView extends View {
     private void createEnemies(int height) {
         Random rnd = new Random();
         Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.enemy1);
-        int count = rnd.nextInt(height/(3*bmp.getHeight()));
+        int count = rnd.nextInt(height/(3*bmp.getHeight())-1)+1;
         for (int i = 0; i < count; i++) {
             enemy.add(new Enemy(bmp));
             enemy.getLast().setTop(i);
@@ -124,79 +123,94 @@ class MyView extends View {
     }
 
     public boolean onTouchEvent(MotionEvent event) {
-        int action = event.getAction();
-        switch (action) {
-            case MotionEvent.ACTION_DOWN:
-                Log.i("MyTag", "ACTION_DOWN");
+        if (!isStart){
+            int action = event.getAction();
+            switch (action) {
+                case MotionEvent.ACTION_DOWN:
+                    Log.i("MyTag", "ACTION_DOWN");
 
-                if (!isWizard)
-                    hero.add(new Hero());
-                isWizard = true;
-                if (isLegs) {
-                    hero.getLast().addPointToNewLeg(event.getX(), event.getY());
-                } else {
-                    hero.getLast().addPointToBody(event.getX(), event.getY());
-                }
+                    if (!isWizard)
+                        hero.add(new Hero());
+                    isWizard = true;
+                    if (isLegs) {
+                        hero.getLast().addPointToNewLeg(event.getX(), event.getY());
+                    } else {
+                        hero.getLast().addPointToBody(event.getX(), event.getY());
+                    }
 
-                break;
-            case MotionEvent.ACTION_MOVE:
-                Log.i("MyTag", "ACTION_MOVE");
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    Log.i("MyTag", "ACTION_MOVE");
 
-                if (!isWizard)
-                    hero.add(new Hero());
-                isWizard = true;
-                if (isLegs) {
-                    hero.getLast().addPointToLastLeg(event.getX(), event.getY());
-                } else {
-                    hero.getLast().addPointToBody(event.getX(), event.getY());
-                }
+                    if (!isWizard)
+                        hero.add(new Hero());
+                    isWizard = true;
+                    if (isLegs) {
+                        hero.getLast().addPointToLastLeg(event.getX(), event.getY());
+                    } else {
+                        hero.getLast().addPointToBody(event.getX(), event.getY());
+                    }
 
-                break;
-            case MotionEvent.ACTION_UP:
-                Log.i("MyTag", "ACTION_UP");
-                if (isLegs) {
-                    hero.getLast().addPointToLastLeg(null);
-                } else {
-                    hero.getLast().addPointToBody(null);
-                }
+                    break;
+                case MotionEvent.ACTION_UP:
+                    Log.i("MyTag", "ACTION_UP");
+                    if (isLegs) {
+                        hero.getLast().addPointToLastLeg(null);
+                    } else {
+                        hero.getLast().addPointToBody(null);
+                    }
 
-                break;
+                    break;
+            }
         }
-
         return true;
     }
 
 
-    private void getCollisionEnemy (int canvasWidth, ArrayList<Double> heroPosition){
+    private void calculateRivals (Hero h){
         double dy = 0;
-        int i = 0;
-        int ic = 0;
-        double heroStep = 0;
+        Enemy resultEnemy = null;
+        double heroTop = h.getTop();
+        double heroBottom = h.getBottom();
+
         for (Enemy e:enemy) {
-            double dx = heroPosition.get(0) + STEP + e.getStep() - (canvasWidth - e.getShift());
-            if (dx >= 0) {
-                if ((e.getTop() <= heroPosition.get(1))&&(e.getBottom() >= heroPosition.get(1))&&
-                    (e.getTop() <= heroPosition.get(2))&&(e.getBottom() >= heroPosition.get(2))){
-                    //вернуть сколько шагов (STEP + e.getStep() - dx) герою, setStep(0) для врага
-                } else if ((e.getTop() <= heroPosition.get(1))&&(e.getBottom() >= heroPosition.get(1))){
-                    double dyTmp = heroPosition.get(1) - e.getBottom();
-                    if (dyTmp > dy){
-                        dy = dyTmp;
-                        ic = i;
-                        heroStep = dx;
-                    }
-                } else if ((e.getTop() <= heroPosition.get(2))&&(e.getBottom() >= heroPosition.get(2))){
-                    double dyTmp = e.getTop() - heroPosition.get(2);
-                    if (dyTmp > dy){
-                        dy = dyTmp;
-                        ic = i;
-                        heroStep = dx;
-                    }
+            if ((e.getTop() <= heroTop)&&(e.getBottom() >= heroTop)&&
+                    (e.getTop() <= heroBottom)&&(e.getBottom() >= heroBottom)){
+                //вернуть сколько шагов (STEP + e.getStep() - dx) герою, setStep(0) для врага
+                rival.put(h, e);
+            } else if ((e.getTop() >= heroTop)&&(e.getBottom() >= heroTop)&&
+                    (e.getTop() <= heroBottom)&&(e.getBottom() <= heroBottom)){
+                rival.put(h, e);
+            } else if ((e.getTop() <= heroTop)&&(e.getBottom() >= heroTop)){
+                double dyTmp = -heroTop + e.getBottom();
+                if (dyTmp > dy){
+                    dy = dyTmp;
+                    resultEnemy = e;
+                }
+            } else if ((e.getTop() <= heroBottom)&&(e.getBottom() >= heroBottom)){
+                double dyTmp = -e.getTop() + heroBottom;
+                if (dyTmp > dy){
+                    dy = dyTmp;
+                    resultEnemy = e;
                 }
             }
-            i++;
         }
         //вернуть сколько (STEP + e.getStep() - dx) шагов герою, setStep(0) для врага
+        if (resultEnemy != null){
+            rival.put(h, resultEnemy);
+        }
+    }
+
+    private boolean isCollisionEnemy (int canvasWidth, Hero h){
+        Enemy e = rival.get(h);
+        if (e != null){
+            double dx = h.getFront() + h.getStep() + STEP + e.getStep() - (canvasWidth - e.getShift());
+            if (dx >= 0){
+                e.setStep(0);
+                return true;
+            }
+        }
+        return false;
     }
 
 
@@ -205,24 +219,21 @@ class MyView extends View {
         invalidate();
 
         int canvasWidth = canvas.getWidth();
-//        double d = 0;
 
 
         for (Hero h : hero)
             if (isStart) {
-                //  d = h.getBounds().x +h.getStep()+ 2*STEP - canvasWidth+enemy.getStep();
-                //  if (d >= 0)
-                //      h.move((int)(STEP-d/2), 0.05, canvas);
-                //  else
-                h.move(STEP, 0.05, canvas);
+//                double heroStep = getCollisionEnemy(canvasWidth, h.getStep(), h.getBounds());
+//                h.move((int)heroStep, 0.05, canvas);
+                if(!isCollisionEnemy(canvasWidth, h))
+                    h.move(STEP, 0.05, canvas);
+                else
+                    h.move(0, 0.05, canvas);
             } else
                 h.move(0, 0, canvas);
 
         for (Enemy e : enemy)
             if (isStart)
-//            if (d >= 0)
-//                enemy.move((int)(STEP-d/2), canvas);
-//            else
                 e.move(true, canvas);
             else
                 e.move(false, canvas);
@@ -231,6 +242,13 @@ class MyView extends View {
 
     public void start() {
         isStart = !isStart;
+        if (isStart){
+            for (Hero h : hero)
+                calculateRivals(h);
+
+            Log.i("TagWiz", rival.toString());
+        }
+
     }
 
     public void wizard() {
