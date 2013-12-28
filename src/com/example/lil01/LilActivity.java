@@ -37,10 +37,10 @@ public class LilActivity extends Activity {
 
         setContentView(R.layout.main);
         TableLayout gl = (TableLayout) findViewById(R.id.gl);
-        myview.setBackgroundColor(Color.BLACK);
+        myview.setBackground(getResources().getDrawable(R.drawable.background));
         myview.requestFocus();
-        gl.addView(myview);
 
+        gl.addView(myview);
         brbtn = (RadioButton) findViewById(R.id.rBody);
         lrbtn = (RadioButton) findViewById(R.id.rLegs);
     }
@@ -84,14 +84,14 @@ class MyView extends View {
     Bitmap myWizard;
     Paint paint;
 
-    private Deque<Hero> hero;
+    private LinkedList<Hero> hero;
     private Deque<Enemy> enemy;
     Map<Hero, Enemy> rival = new HashMap<Hero, Enemy>();
 
     public boolean isLegs = false;
     private boolean isStart = false;
     private boolean isWizard = false;
-    private final int STEP = 10;
+    // private final int STEP = 10;
 
     public MyView(Context context, int height) {
         super(context);
@@ -101,8 +101,9 @@ class MyView extends View {
         paint = new Paint();
         paint.setColor(Color.WHITE);
         paint.setAntiAlias(true);
-        paint.setStyle(Paint.Style.FILL);
-        paint.setStrokeWidth(5);
+        paint.setStrokeWidth(15);
+        paint.setStyle(Paint.Style.STROKE);
+
         myWizard = BitmapFactory.decodeResource(getResources(), R.drawable.wizard);
 
         hero = new LinkedList<Hero>();
@@ -113,7 +114,7 @@ class MyView extends View {
     private void createEnemies(int height) {
         Random rnd = new Random();
         Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.enemy1);
-        int count = rnd.nextInt(height/(3*bmp.getHeight())-1)+1;
+        int count = 3;//rnd.nextInt(height/(3*bmp.getHeight())-1)+1;
         for (int i = 0; i < count; i++) {
             enemy.add(new Enemy(bmp));
             enemy.getLast().setTop(i);
@@ -123,7 +124,7 @@ class MyView extends View {
     }
 
     public boolean onTouchEvent(MotionEvent event) {
-        if (!isStart){
+        if (!isStart) {
             int action = event.getAction();
             switch (action) {
                 case MotionEvent.ACTION_DOWN:
@@ -167,50 +168,55 @@ class MyView extends View {
     }
 
 
-    private void calculateRivals (Hero h){
+    private void calculateRivals(Hero h) {
         double dy = 0;
         Enemy resultEnemy = null;
         double heroTop = h.getTop();
         double heroBottom = h.getBottom();
 
-        for (Enemy e:enemy) {
-            if ((e.getTop() <= heroTop)&&(e.getBottom() >= heroTop)&&
-                    (e.getTop() <= heroBottom)&&(e.getBottom() >= heroBottom)){
-                //вернуть сколько шагов (STEP + e.getStep() - dx) герою, setStep(0) для врага
-                rival.put(h, e);
-            } else if ((e.getTop() >= heroTop)&&(e.getBottom() >= heroTop)&&
-                    (e.getTop() <= heroBottom)&&(e.getBottom() <= heroBottom)){
-                rival.put(h, e);
-            } else if ((e.getTop() <= heroTop)&&(e.getBottom() >= heroTop)){
-                double dyTmp = -heroTop + e.getBottom();
-                if (dyTmp > dy){
-                    dy = dyTmp;
-                    resultEnemy = e;
-                }
-            } else if ((e.getTop() <= heroBottom)&&(e.getBottom() >= heroBottom)){
-                double dyTmp = -e.getTop() + heroBottom;
-                if (dyTmp > dy){
-                    dy = dyTmp;
-                    resultEnemy = e;
+        for (Enemy e : enemy) {
+            if (!rival.containsValue(e)) {
+                if ((e.getTop() <= heroTop) && (e.getBottom() >= heroTop) &&
+                        (e.getTop() <= heroBottom) && (e.getBottom() >= heroBottom)) {
+                    rival.put(h, e);
+                    break;
+                } else if ((e.getTop() >= heroTop) && (e.getBottom() >= heroTop) &&
+                        (e.getTop() <= heroBottom) && (e.getBottom() <= heroBottom)) {
+                    rival.put(h, e);
+                    break;
+                } else if ((e.getTop() <= heroTop) && (e.getBottom() >= heroTop)) {
+                    double dyTmp = -heroTop + e.getBottom();
+                    if (dyTmp > dy) {
+                        dy = dyTmp;
+                        resultEnemy = e;
+                    }
+                } else if ((e.getTop() <= heroBottom) && (e.getBottom() >= heroBottom)) {
+                    double dyTmp = -e.getTop() + heroBottom;
+                    if (dyTmp > dy) {
+                        dy = dyTmp;
+                        resultEnemy = e;
+                    }
                 }
             }
         }
-        //вернуть сколько (STEP + e.getStep() - dx) шагов герою, setStep(0) для врага
-        if (resultEnemy != null){
+        if (resultEnemy != null) {
             rival.put(h, resultEnemy);
         }
     }
 
-    private boolean isCollisionEnemy (int canvasWidth, Hero h){
+    private double isCollisionEnemy(int canvasWidth, Hero h) {
         Enemy e = rival.get(h);
-        if (e != null){
-            double dx = h.getFront() + h.getStep() + STEP + e.getStep() - (canvasWidth - e.getShift());
-            if (dx >= 0){
+        if (e != null) {
+            double dx = h.getFront() + h.getShift() + h.getStep() + e.getStep() - (canvasWidth - e.getShift());
+            if (dx >= -1) {
+                int lastStep = e.getStep();
                 e.setStep(0);
-                return true;
+                e.setDied();
+                h.setDied();
+                return h.getStep() + lastStep - dx;
             }
         }
-        return false;
+        return -1;
     }
 
 
@@ -221,37 +227,95 @@ class MyView extends View {
         int canvasWidth = canvas.getWidth();
 
 
-        for (Hero h : hero)
+        for (Iterator<Hero> iterator = hero.iterator(); iterator.hasNext(); ) {
+            Hero h = iterator.next();
+
             if (isStart) {
-//                double heroStep = getCollisionEnemy(canvasWidth, h.getStep(), h.getBounds());
-//                h.move((int)heroStep, 0.05, canvas);
-                if(!isCollisionEnemy(canvasWidth, h))
-                    h.move(STEP, 0.05, canvas);
-                else
-                    h.move(0, 0.05, canvas);
-            } else
-                h.move(0, 0, canvas);
+                double tmpStep = isCollisionEnemy(canvasWidth, h);
+                if (tmpStep < 0)
+                    h.move(true, canvas);
+                else {
+                    if (h.getStep() > 0)
+                        h.setStep((int) tmpStep);
+                    h.move(true, canvas);
+
+                    h.setStep(0);
+
+                    Enemy e = rival.get(h);
+                    if (e.getStep() == 0 && e.getShift() == 0 && h.getAlpha() == 0) {
+//                        Map<Hero, Enemy> temp = new HashMap<Hero, Enemy>();
+//                        temp.putAll(rival);
+                        int size = rival.size();
+                        rival.remove(h);
+//                        if (size - rival.size() > 1) {
+//                            Log.d("", "");
+//                        }
+                        iterator.remove();
+                    }
+                }
+            } else {
+                h.move(false, canvas);
+            }
+        }
 
         for (Enemy e : enemy)
-            if (isStart)
+            if (isStart) {
                 e.move(true, canvas);
-            else
+            } else
                 e.move(false, canvas);
+
+
+        drawWindow(canvas, canvasWidth);
+    }
+
+    private void drawWindow(Canvas canvas, int canvasWidth) {
+        paint.setColor(Color.WHITE);
+        paint.setStrokeWidth(15);
+        canvas.drawRect(canvas.getClipBounds(), paint);
+
+        int startX = canvasWidth / 2 - 15;
+        int startX1 = canvasWidth / 2 + 3;
+
+        int height = canvas.getHeight();
+
+        canvas.drawLine(startX, 0, startX, height,paint);
+        canvas.drawLine(startX1, 0, startX1, height,paint);
+
+        paint.setColor(Color.GRAY);
+        paint.setStrokeWidth(5);
+        canvas.drawRect(startX - 7, height/3, startX + 7, height/3+40, paint);
+        canvas.drawRect(startX1 - 7, height/3, startX1 + 7, height/3+40, paint);
     }
 
 
     public void start() {
         isStart = !isStart;
-        if (isStart){
-            for (Hero h : hero)
-                calculateRivals(h);
+        if (isStart && rival.size() == 0) {
+//            for (Hero h : hero){
+//                if (h.getStep() != 0)
+//                    calculateRivals(h);
+//            }
 
             Log.i("TagWiz", rival.toString());
         }
 
     }
 
+    private void animateHero(){
+        int heroSize = hero.size();
+        if (heroSize > 0 && hero.getLast().getStep() == 0) {
+            Hero h = hero.getLast();
+            h.setStep(10);
+            h.fill(Color.rgb((heroSize%3+1)*89, (heroSize%2+1)*78, heroSize*95));
+
+            calculateRivals(h);
+
+            invalidate();
+        }
+    }
+
     public void wizard() {
         isWizard = false;
+        animateHero();
     }
 }

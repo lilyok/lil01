@@ -12,6 +12,7 @@ import java.util.List;
 public class Hero {
     private Figure body;
     private List<Figure> legs;
+    private int shift = 0;
     private int step = 0;
     private double phi = 0;
     private double dphi = 0.05;
@@ -21,6 +22,7 @@ public class Hero {
     private double front = 0;
     private double bottom = 0;
     private double top = 10000;
+    private int alpha = 255;
 
     public Hero() {
         body = new Figure();
@@ -97,20 +99,25 @@ public class Hero {
         return top;
     }
 
-    public void move(int step, double phi, Canvas canvas) {
-        this.step += step;
-        if (phi != 0) {
-            if (this.phi >= 0.2 || this.phi <= -0.2)
-                dphi = -dphi;
-            this.phi += dphi;
-        } else {
-            this.phi = phi;
+    public void move(boolean isMoving, Canvas canvas) {
+        if (isMoving){
+            this.shift += step;
+            if (phi != 0) {
+                if (this.phi >= 0.2 || this.phi <= -0.2)
+                    dphi = -dphi;
+                this.phi += dphi;
+            } else {
+                this.phi = 0.05;
+            }
+        }else{
+            this.phi = 0;
         }
 
         onDraw(canvas);
     }
 
     private void onDraw(Canvas canvas) {
+//        paint.setAlpha(alpha);
         geometry.Point currPoint = null;
         for (Point p : getPoints()) {
             if (p != null) {
@@ -118,6 +125,7 @@ public class Hero {
                 if (currPoint != null) {
                     if (p.x < canvas.getWidth()) {
                         paint.setColor(currPoint.c);
+                        paint.setAlpha(alpha);
                         canvas.drawLine(currPoint.fx(), currPoint.fy(), p.fx(), p.fy(), paint);
                     }
                 }
@@ -145,12 +153,44 @@ public class Hero {
         res.addAll(body.clonePoints());
         for (Point r : res) {
             if (r != null)
-                r.x += step;
+                r.x += shift;
         }
         return res;
     }
 
-    public int getStep() {
+    public int getShift() {
+        return shift;
+    }
+
+    public int getStep(){
         return step;
+    }
+
+    public void setStep(int step){
+        this.step = step;
+    }
+
+    public void setDied() {
+        if (alpha >0)
+            alpha -= 51;
+    }
+
+    public int getAlpha(){
+        return alpha;
+    }
+
+    public void fill(int color){
+        for (Point p : body.getPoints()) {
+            if (p != null) {
+                p.c = color;
+            }
+        }
+
+        for (Figure leg : legs){
+            for (Point p : leg.getPoints()){
+                if ( p != null)
+                    p.c = color;
+            }
+        }
     }
 }

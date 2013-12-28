@@ -12,7 +12,7 @@ public class Enemy extends Paint {
     private int height = 0;
     private int top = 0;
     private int bottom = 0;
-
+    private int alpha = 255;
 
     public int getShift() {
         return shift;
@@ -63,14 +63,27 @@ public class Enemy extends Paint {
         }
 
         onDraw(canvas);
+
     }
 
     private void onDraw(Canvas canvas) {
-        canvas.drawBitmap(bmp, src, dst, null);
+        Paint paint=new Paint();
+        paint.setAlpha(alpha);
+        canvas.drawBitmap(bmp, src, dst, paint);
     }
 
     public Bitmap getBmp() {
         return bmp;
+    }
+
+    public void setDied(){
+        if (alpha>0)
+            alpha -= 51;
+        else if (alpha == 0){
+            alpha = 255;
+            this.shift = 0;
+            this.step = 0;
+        }
     }
 
 }
