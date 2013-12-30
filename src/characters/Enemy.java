@@ -2,6 +2,8 @@ package characters;
 
 import android.graphics.*;
 
+import java.util.Random;
+
 public class Enemy extends Paint {
     private Bitmap bmp;
     private int shift = 0;
@@ -39,7 +41,7 @@ public class Enemy extends Paint {
     }
 
     public void setTop(int top) {
-        this.top = top * (height * 3 + 3);
+        this.top = top * (height * 3 + 10) + 10;
         this.bottom = this.top + height * 3;
     }
     private Rect src = new Rect();
@@ -52,6 +54,11 @@ public class Enemy extends Paint {
     }
 
     public void move(boolean isMoving, Canvas canvas) {
+        if (this.step == 0){
+            Random rnd = new Random();
+            this.step = rnd.nextInt(5) + 5;
+        }
+
         int srcX = numFrame * width;
         src = new Rect(srcX, 0, srcX + width, height);
         int canvasWidth = canvas.getWidth();
@@ -86,4 +93,11 @@ public class Enemy extends Paint {
         }
     }
 
+    public int getAlpha() {
+        return alpha;
+    }
+
+    public void setShift(int shift) {
+        this.shift = shift;
+    }
 }
