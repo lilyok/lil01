@@ -106,7 +106,7 @@ public class Hero {
                 if (this.phi >= 0.2 || this.phi <= -0.2)
                     dphi = -dphi;
                 this.phi += dphi;
-            } else {
+            } else if (step != 0){
                 this.phi = 0.05;
             }
         }else{
