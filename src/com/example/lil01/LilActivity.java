@@ -146,6 +146,7 @@ class MyView extends View {
     private TextView scoreTextView;
     private Integer score = 0;
     private Integer lastScore = 0;
+    private int canvasWidth = 0;
     private LinkedList<Hero> hero;
     private Deque<Enemy> enemy;
     private Map<Hero, Enemy> rival = new HashMap<Hero, Enemy>();
@@ -242,7 +243,8 @@ class MyView extends View {
         double heroBottom = h.getBottom();
 
         for (Enemy e : enemy) {
-            if (!rival.containsValue(e)) {
+            //if (!rival.containsValue(e)) {
+            if (h.getFront() < canvasWidth - e.getShift()){
                 if ((e.getTop() <= heroTop) && (e.getBottom() >= heroTop) &&
                         (e.getTop() <= heroBottom) && (e.getBottom() >= heroBottom)) {
                     rival.put(h, e);
@@ -266,6 +268,7 @@ class MyView extends View {
                 }
             }
         }
+      //  }
         if (resultEnemy != null) {
             rival.put(h, resultEnemy);
         }
@@ -291,7 +294,7 @@ class MyView extends View {
         super.onDraw(canvas);
         invalidate();
 
-        int canvasWidth = canvas.getWidth();
+        canvasWidth = canvas.getWidth();
 
 
         for (Iterator<Hero> iterator = hero.iterator(); iterator.hasNext(); ) {
