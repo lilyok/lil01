@@ -1,7 +1,10 @@
 package com.example.lil01;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.*;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -46,6 +49,36 @@ public class LilActivity extends Activity {
         myview.requestFocus();
 
         gl.addView(myview);
+    }
+
+    public void onBackPressed() {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+        alertDialog.setTitle("Выйти?");
+
+        alertDialog.setMessage("Вы действительно хотите выйти?");
+
+        alertDialog.setPositiveButton("Да", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog,int which) {
+                Intent intent = new Intent(Intent.ACTION_MAIN);
+                intent.addCategory(Intent.CATEGORY_HOME);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+
+                int lastScore = readScore();
+
+                recalculateScore(lastScore);
+            }
+        });
+
+        alertDialog.setNegativeButton("Нет", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        alertDialog.show();
+        return;
+
     }
 
     public void startBtnClick(View view) {
@@ -354,7 +387,7 @@ class MyView extends View {
         canvas.drawRect(0, 0, startX, height/2, paint);
         paint.setStyle(Paint.Style.STROKE);
         paint.setColor(Color.BLUE);
-        canvas.drawText("You killed "+ score.toString() + " enemies", 30, height/4, paint);
+        canvas.drawText("You killed " + score.toString() + " enemies", 30, height / 4, paint);
 
         Integer record = lastScore;
         if (score > lastScore) record = score;

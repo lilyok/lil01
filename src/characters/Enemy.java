@@ -41,8 +41,8 @@ public class Enemy extends Paint {
     }
 
     public void setTop(int top) {
-        this.top = top * (height * 3 + 10) + 10;
-        this.bottom = this.top + height * 3;
+        this.top = top * (height + 10) + 10;
+        this.bottom = this.top + height;
     }
     private Rect src = new Rect();
     private Rect dst = new Rect();
@@ -62,7 +62,7 @@ public class Enemy extends Paint {
         int srcX = numFrame * width;
         src = new Rect(srcX, 0, srcX + width, height);
         int canvasWidth = canvas.getWidth();
-        dst = new Rect(canvasWidth - this.shift, top, canvasWidth - this.shift + 3 * width, bottom);
+        dst = new Rect(canvasWidth - this.shift, top, canvasWidth - this.shift + width, bottom);
 
         if (isMoving) {
             this.shift += step;
