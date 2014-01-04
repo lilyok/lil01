@@ -9,6 +9,8 @@ import android.graphics.*;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.*;
@@ -17,6 +19,7 @@ import characters.Hero;
 
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 public class LilActivity extends Activity {
@@ -25,12 +28,29 @@ public class LilActivity extends Activity {
     private RadioButton lrbtn;
     private TextView score;
     private final String FILENAME = "score.log";
+    private final List<Integer> helps = new ArrayList<Integer>();
+    private final List <String> helpTexts = new ArrayList<String>();
     /**
      * Called when the activity is first created.
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        helps.add(R.drawable.help1);
+        helps.add(R.drawable.help2);
+        helps.add(R.drawable.help3);
+        helps.add(R.drawable.help4);
+        helps.add(R.drawable.help5);
+        helps.add(R.drawable.help6);
+
+        helpTexts.add("You would have battle with dragons and\nyou can draw heroes on window:\n1) Select 'Body' if it was not selected");
+        helpTexts.add("2) Draw body, head or\nother body parts\nwhich moving in a straight line");
+        helpTexts.add("3) Select 'Legs' and\ndraw legs, tail,\nwings, hair, if you want");
+        helpTexts.add("4) Press wizard button\nfor animate hero\nhero must change color");
+        helpTexts.add("5) Then draw and animate\nother hero, if you want\n");
+        helpTexts.add("6) When all heroes is ready press\nStart button. Press Pause button for\npaused game or for draw new Hero");
+
 
         DisplayMetrics displaymetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
@@ -53,11 +73,11 @@ public class LilActivity extends Activity {
 
     public void onBackPressed() {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
-        alertDialog.setTitle("Выйти?");
+        alertDialog.setTitle("Exit?");
 
-        alertDialog.setMessage("Вы действительно хотите выйти?");
+        alertDialog.setMessage("Do you want exit?");
 
-        alertDialog.setPositiveButton("Да", new DialogInterface.OnClickListener() {
+        alertDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog,int which) {
                 Intent intent = new Intent(Intent.ACTION_MAIN);
                 intent.addCategory(Intent.CATEGORY_HOME);
@@ -70,7 +90,7 @@ public class LilActivity extends Activity {
             }
         });
 
-        alertDialog.setNegativeButton("Нет", new DialogInterface.OnClickListener() {
+        alertDialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 dialog.cancel();
             }
@@ -80,6 +100,103 @@ public class LilActivity extends Activity {
         return;
 
     }
+
+
+
+    public void helpBtnClick(final View view){
+        Toast.makeText(this, "тут будет справка", Toast.LENGTH_SHORT).show();
+        final AlertDialog.Builder alertHelpBuilder = new AlertDialog.Builder(this);
+        alertHelpBuilder.setTitle("Help");
+
+
+        final View helpView = new View(this);
+        final AtomicInteger picNum = new AtomicInteger(0);
+        final TextView helpText = new TextView(this);
+        helpText.setText(helpTexts.get(0));
+        helpText.setTextSize(14);
+
+        helpView.setBackground(getResources().getDrawable(helps.get(0)));
+
+
+        alertHelpBuilder.setNegativeButton("Close", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+
+        final Button backBtn = new Button(this);
+        backBtn.setText("back");
+        backBtn.setEnabled(false);
+
+        backBtn.setLayoutParams(new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT, 1.0f));
+
+        final Button nextBtn = new Button(this);
+        nextBtn.setText("next");
+        nextBtn.setLayoutParams(new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT, 1.0f));
+
+        backBtn.setOnClickListener(new View.OnClickListener() {
+
+            public void onClick(View v) {
+                int i = picNum.get();
+                if (i > 0){
+                    i = picNum.decrementAndGet();
+                    if (i == 4)
+                        nextBtn.setEnabled(true);
+                    else if (i == 0)
+                        v.setEnabled(false);
+                    helpView.setBackground(getResources().getDrawable(helps.get(i)));
+                    helpText.setText(helpTexts.get(i));
+                }
+            }
+
+        });
+
+
+        nextBtn.setOnClickListener(new View.OnClickListener() {
+
+            public void onClick(View v) {
+                int i = picNum.get();
+                if (i < 5){
+                    i = picNum.incrementAndGet();
+                    if (i == 1)
+                        backBtn.setEnabled(true);
+                    else if (i == 5)
+                        v.setEnabled(false);
+
+                    helpView.setBackground(getResources().getDrawable(helps.get(i)));
+                    helpText.setText(helpTexts.get(i));
+                }
+            }
+
+        });
+
+
+        LinearLayout layoutHorizontal = new LinearLayout(this);
+        layoutHorizontal.setOrientation(0);
+        layoutHorizontal.setGravity(Gravity.FILL);
+        layoutHorizontal.addView(backBtn);
+        layoutHorizontal.addView(helpText);
+        layoutHorizontal.addView(nextBtn);
+
+
+        LinearLayout layoutVertical = new LinearLayout(this);
+        layoutVertical.setOrientation(1);
+        layoutVertical.setGravity(Gravity.CENTER);
+
+        layoutVertical.addView(layoutHorizontal);
+        layoutVertical.addView(helpView);
+
+        alertHelpBuilder.setView(layoutVertical);
+
+
+        alertHelpBuilder.show();
+    }
+
 
     public void startBtnClick(View view) {
         // выводим сообщение
@@ -215,11 +332,11 @@ class MyView extends View {
     private void createEnemies(int height) {
         Random rnd = new Random();
         Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.enemy1);
-        int count = 3;//rnd.nextInt(height/(3*bmp.getHeight())-1)+1;
+        int count = height/bmp.getHeight();//3;//rnd.nextInt(height/(3*bmp.getHeight())-1)+1;
         for (int i = 0; i < count; i++) {
             enemy.add(new Enemy(bmp));
             enemy.getLast().setTop(i);
-            enemy.getLast().setStep(rnd.nextInt(5) + 5);
+            enemy.getLast().setStep(rnd.nextInt(2) + 1);
         }
 
     }
@@ -442,7 +559,7 @@ class MyView extends View {
         int heroSize = hero.size();
         if (heroSize > 0 && hero.getLast().getStep() == 0) {
             Hero h = hero.getLast();
-            h.setStep(10);
+            h.setStep(3);
             h.fill(Color.rgb((heroSize%3+1)*89, (heroSize%2+1)*78, heroSize*95));
 
             calculateRivals(h);
