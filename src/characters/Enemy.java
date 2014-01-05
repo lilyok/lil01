@@ -56,7 +56,7 @@ public class Enemy extends Paint {
     public void move(boolean isMoving, Canvas canvas) {
         if (this.step == 0){
             Random rnd = new Random();
-            this.step = rnd.nextInt(2) + 1;
+            this.step = rnd.nextInt(5) + 5;
         }
 
         int srcX = numFrame * width;
@@ -66,8 +66,8 @@ public class Enemy extends Paint {
 
         if (isMoving) {
             this.shift += step;
-            if (this.shift / step % 7 == 0)
-                numFrame = ++numFrame % 3;
+//            if (this.shift / step % 7 == 0)
+            numFrame = ++numFrame % 3;
         }
 
         onDraw(canvas);

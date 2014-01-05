@@ -15,7 +15,7 @@ public class Hero {
     private int shift = 0;
     private int step = 0;
     private double phi = 0;
-    private double dphi = 0.05;
+    private double dphi = 0.1;
     private Paint paint;
     private boolean isRight = true;
 
@@ -23,6 +23,7 @@ public class Hero {
     private double bottom = 0;
     private double top = 10000;
     private int alpha = 255;
+    private boolean isMoving = false;
 
     public Hero() {
         body = new Figure();
@@ -100,24 +101,20 @@ public class Hero {
     }
 
     public void move(boolean isMoving, Canvas canvas) {
+        this.isMoving = isMoving;
         if (isMoving){
             this.shift += step;
-            if (phi != 0) {
-                if (this.phi >= 0.2 || this.phi <= -0.2)
+            if (step != 0){
+                if (this.phi >= 0.5 || this.phi <= -0.5)
                     dphi = -dphi;
                 this.phi += dphi;
-            } else if (step != 0){
-                this.phi = 0.05;
             }
-        }else{
-            this.phi = 0;
         }
 
         onDraw(canvas);
     }
 
-    private void onDraw(Canvas canvas) {
-//        paint.setAlpha(alpha);
+    public void onDraw(Canvas canvas) {
         geometry.Point currPoint = null;
         for (Point p : getPoints()) {
             if (p != null) {
@@ -139,7 +136,7 @@ public class Hero {
         List<Point> res = new ArrayList<Point>();
         boolean isLeft = !isRight;
         for (Figure leg : legs) {
-            if (isRight)
+            if (isRight && isMoving)
                 res.addAll(leg.rotatePoints(phi));
             else
                 res.addAll(leg.clonePoints());
@@ -147,8 +144,8 @@ public class Hero {
 
             isRight = !isRight;
         }
-
-        isRight = isLeft;
+        if (isMoving)
+            isRight = isLeft;
 
         res.addAll(body.clonePoints());
         for (Point r : res) {

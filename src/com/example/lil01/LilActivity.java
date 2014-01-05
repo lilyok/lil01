@@ -306,6 +306,8 @@ class MyView extends View {
     private boolean isWizard = false;
 
     private boolean isInfo = false;
+    private long prevTime;
+
     // private final int STEP = 10;
 
     public MyView(Context context, int height, TextView scoreTextView, Button startBtn) {
@@ -329,14 +331,14 @@ class MyView extends View {
         createEnemies(height);
     }
 
-    private void createEnemies(int height) {
+    private void createEnemies(double height) {
         Random rnd = new Random();
         Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.enemy1);
-        int count = height/bmp.getHeight();//3;//rnd.nextInt(height/(3*bmp.getHeight())-1)+1;
-        for (int i = 0; i < count; i++) {
+        int count = (int)Math.round(height/(double)bmp.getHeight());//3;//rnd.nextInt(height/(3*bmp.getHeight())-1)+1;
+        for (int i = 0; i < count-1; i++) {
             enemy.add(new Enemy(bmp));
             enemy.getLast().setTop(i);
-            enemy.getLast().setStep(rnd.nextInt(2) + 1);
+            enemy.getLast().setStep(rnd.nextInt(5) + 5);
         }
 
     }
@@ -441,8 +443,14 @@ class MyView extends View {
 
 
     protected void onDraw(Canvas canvas) {
+        long now = System.currentTimeMillis();
+        long elapsedTime = now - prevTime;
+        if (elapsedTime > 400)
+            prevTime =  now;
+
         super.onDraw(canvas);
         invalidate();
+
 
         canvasWidth = canvas.getWidth();
 
@@ -450,35 +458,37 @@ class MyView extends View {
         for (Iterator<Hero> iterator = hero.iterator(); iterator.hasNext(); ) {
             Hero h = iterator.next();
 
-            if (isStart) {
+            if (isStart && elapsedTime > 400) {
                 double tmpStep = isCollisionEnemy(canvasWidth, h);
-                if (tmpStep < 0)
-                    h.move(true, canvas);
-                else {
-                    if (h.getStep() > 0) {
-                        h.setStep((int) tmpStep);
-                        score++;
-                        scoreTextView.setText(score.toString());
+//                if (elapsedTime > 400){
+                    if (tmpStep < 0)
+                        h.move(true, canvas);
+                    else {
+                        if (h.getStep() > 0) {
+                            h.setStep((int) tmpStep);
+                            score++;
+                            scoreTextView.setText(score.toString());
+                        }
+                        h.move(true, canvas);
+
+                        h.setStep(0);
+
+                        if (h.getAlpha() == 0) {
+
+                            rival.remove(h);
+                            iterator.remove();
+                        }
                     }
-                    h.move(true, canvas);
-
-                    h.setStep(0);
-
-
-
-                    if (h.getAlpha() == 0) {
-
-                        rival.remove(h);
-                        iterator.remove();
-                    }
-                }
+//                } else {
+//                    h.move(false, canvas);
+//                }
             } else {
                 h.move(false, canvas);
             }
         }
 
         for (Enemy e : enemy)
-            if (isStart) {
+            if (isStart && elapsedTime > 400) {
                 e.move(true, canvas);
                 if (e.getShift() >= canvasWidth) {
                     startBtn.callOnClick();
@@ -493,6 +503,7 @@ class MyView extends View {
         }
         drawWindow(canvas, canvasWidth);
     }
+
 
     private void drawResult(Canvas canvas, int canvasWidth) {
         int startX = canvasWidth / 2;
@@ -559,7 +570,7 @@ class MyView extends View {
         int heroSize = hero.size();
         if (heroSize > 0 && hero.getLast().getStep() == 0) {
             Hero h = hero.getLast();
-            h.setStep(3);
+            h.setStep(5);
             h.fill(Color.rgb((heroSize%3+1)*89, (heroSize%2+1)*78, heroSize*95));
 
             calculateRivals(h);
