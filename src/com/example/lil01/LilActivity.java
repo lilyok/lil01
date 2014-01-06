@@ -48,8 +48,8 @@ public class LilActivity extends Activity {
         helpTexts.add("2) Draw body, head or\nother body parts\nwhich moving in a straight line");
         helpTexts.add("3) Select 'Legs' and\ndraw legs, tail,\nwings, hair, if you want");
         helpTexts.add("4) Press wizard button\nfor animate hero\nhero must change color");
-        helpTexts.add("5) Then draw and animate\nother hero, if you want\n");
-        helpTexts.add("6) When all heroes is ready press\nStart button. Press Pause button for\npaused game or for draw new Hero");
+        helpTexts.add("5) Then draw and animate\nother hero, if you want.\nYou can draw new heroes during the game.");
+        helpTexts.add("6) When all heroes is ready press\nStart button. Press Pause button for\npaused game");
 
 
         DisplayMetrics displaymetrics = new DisplayMetrics();
@@ -106,7 +106,7 @@ public class LilActivity extends Activity {
     public void helpBtnClick(final View view){
         Toast.makeText(this, "тут будет справка", Toast.LENGTH_SHORT).show();
         final AlertDialog.Builder alertHelpBuilder = new AlertDialog.Builder(this);
-        alertHelpBuilder.setTitle("Help");
+       // alertHelpBuilder.setTitle("Help");
 
 
         final View helpView = new View(this);
@@ -344,7 +344,7 @@ class MyView extends View {
     }
 
     public boolean onTouchEvent(MotionEvent event) {
-        if (!isStart) {
+       // if (!isStart) {
             int action = event.getAction();
             switch (action) {
                 case MotionEvent.ACTION_DOWN:
@@ -383,7 +383,7 @@ class MyView extends View {
 
                     break;
             }
-        }
+    //    }
         return true;
     }
 
@@ -445,7 +445,8 @@ class MyView extends View {
     protected void onDraw(Canvas canvas) {
         long now = System.currentTimeMillis();
         long elapsedTime = now - prevTime;
-        if (elapsedTime > 400)
+        int pauseTime = 100;
+        if (elapsedTime > pauseTime)
             prevTime =  now;
 
         super.onDraw(canvas);
@@ -458,7 +459,7 @@ class MyView extends View {
         for (Iterator<Hero> iterator = hero.iterator(); iterator.hasNext(); ) {
             Hero h = iterator.next();
 
-            if (isStart && elapsedTime > 400) {
+            if (isStart && elapsedTime > pauseTime) {
                 double tmpStep = isCollisionEnemy(canvasWidth, h);
 //                if (elapsedTime > 400){
                     if (tmpStep < 0)
@@ -488,7 +489,7 @@ class MyView extends View {
         }
 
         for (Enemy e : enemy)
-            if (isStart && elapsedTime > 400) {
+            if (isStart && elapsedTime > pauseTime) {
                 e.move(true, canvas);
                 if (e.getShift() >= canvasWidth) {
                     startBtn.callOnClick();

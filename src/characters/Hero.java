@@ -50,12 +50,12 @@ public class Hero {
     public void addPointToNewLeg(Point p) {
         legs.add(new Figure(p));
         if (p != null)
-            setBounds(0, p.y);
+            setBounds(p.x, p.y);
     }
 
     public void addPointToNewLeg(double x, double y) {
         legs.add(new Figure(new Point(x, y, Color.rgb(250, 0, 250))));
-        setBounds(0, y);
+        setBounds(x, y);
 
     }
 
@@ -63,13 +63,13 @@ public class Hero {
         Figure last = legs.get(legs.size() - 1);
         last.add(p);
         if (p != null)
-            setBounds(0, last.get(0).y + last.getMostRemoteFromStartPoint());
+            setBounds(p.x, last.get(0).y + last.getMostRemoteFromStartPoint());
     }
 
     public void addPointToLastLeg(double x, double y) {
         Figure last = legs.get(legs.size() - 1);
         last.add(new Point(x, y, Color.rgb(250, 0, 250)));
-        setBounds(0, last.get(0).y + last.getMostRemoteFromStartPoint());
+        setBounds(x, last.get(0).y + last.getMostRemoteFromStartPoint());
     }
 
 
@@ -105,9 +105,12 @@ public class Hero {
         if (isMoving){
             this.shift += step;
             if (step != 0){
-                if (this.phi >= 0.5 || this.phi <= -0.5)
-                    dphi = -dphi;
                 this.phi += dphi;
+
+                if (this.phi >= 0.3 || this.phi <= 0)
+                    if (this.phi >= 0.3) this.phi = 0.3;
+                    else this.phi = 0;
+                    dphi = -dphi;
             }
         }
 
@@ -136,7 +139,7 @@ public class Hero {
         List<Point> res = new ArrayList<Point>();
         boolean isLeft = !isRight;
         for (Figure leg : legs) {
-            if (isRight && isMoving)
+            if (isRight)
                 res.addAll(leg.rotatePoints(phi));
             else
                 res.addAll(leg.clonePoints());
@@ -144,8 +147,10 @@ public class Hero {
 
             isRight = !isRight;
         }
-        if (isMoving)
+        if (isMoving && this.phi <= 0)
             isRight = isLeft;
+        else
+            isRight = !isLeft;
 
         res.addAll(body.clonePoints());
         for (Point r : res) {
