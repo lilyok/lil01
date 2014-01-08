@@ -396,7 +396,7 @@ class MyView extends View {
 
         for (Enemy e : enemy) {
             //if (!rival.containsValue(e)) {
-            if (h.getFront() < canvasWidth - e.getShift()){
+            if (h.getBackend() < canvasWidth - e.getShift() + e.getWidth()){
                 if ((e.getTop() <= heroTop) && (e.getBottom() >= heroTop) &&
                         (e.getTop() <= heroBottom) && (e.getBottom() >= heroBottom)) {
                     rival.put(h, e);
