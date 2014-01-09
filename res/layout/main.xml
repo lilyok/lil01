@@ -20,19 +20,21 @@
                     android:enabled="true" android:visibility="visible"
                     android:contentDescription="aaa" android:layout_column="0" android:layout_gravity="left"/>
         <RadioButton
-                android:layout_width="fill_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
-                android:text="Body"
+                android:drawableRight="@drawable/body"
                 android:id="@+id/rBody" android:layout_column="1" android:checked="true" android:background="#050447"
                 android:onClick="bodyRbtnClick"
-            android:paddingLeft="35dp" />
+            android:paddingLeft="1dp"
+            android:gravity="left"/>
         <RadioButton
-                android:layout_width="fill_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
-                android:text="Legs"
+                android:drawableRight="@drawable/legs"
                 android:id="@+id/rLegs" android:layout_column="2" android:checked="false"
                 android:background="#050447" android:onClick="legsRbtnClick"
-            android:paddingLeft="35dp" />
+            android:paddingLeft="1dp"
+            android:gravity="left"/>
         <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="fill_parent"

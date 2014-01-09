@@ -19,6 +19,8 @@ public class Hero {
     private Paint paint;
     private boolean isRight = true;
 
+
+    private double backend  = 10000;
     private double front = 0;
     private double bottom = 0;
     private double top = 10000;
@@ -63,13 +65,13 @@ public class Hero {
         Figure last = legs.get(legs.size() - 1);
         last.add(p);
         if (p != null)
-            setBounds(p.x, last.get(0).y + last.getMostRemoteFromStartPoint());
+            setBounds(p.x, p.y);//last.get(0).y + last.getMostRemoteFromStartPoint());
     }
 
     public void addPointToLastLeg(double x, double y) {
         Figure last = legs.get(legs.size() - 1);
         last.add(new Point(x, y, Color.rgb(250, 0, 250)));
-        setBounds(x, last.get(0).y + last.getMostRemoteFromStartPoint());
+        setBounds(x, y);//last.get(0).y + last.getMostRemoteFromStartPoint());
     }
 
 
@@ -77,6 +79,7 @@ public class Hero {
         if (y > bottom) bottom = y;
         if (y < top) top = y;
         if (x > front) front = x;
+        if ( x < backend) backend = x;
     }
 
     public List<Double> getBounds() {
@@ -90,6 +93,10 @@ public class Hero {
 
     public double getFront() {
         return front;
+    }
+
+    public double getBackend() {
+        return backend;
     }
 
     public double getBottom() {
@@ -195,4 +202,84 @@ public class Hero {
             }
         }
     }
+
+    public void deletePoint(double x, double y) {
+        int bodySize = body.getPoints().size();
+
+        if (bodySize > 0){
+            int i = 1;
+            Point lastBodyPoint = body.get(bodySize-i);
+            while (lastBodyPoint == null){
+                i++;
+                lastBodyPoint = body.get(bodySize-i);
+            }
+
+            if (lastBodyPoint.x == x && lastBodyPoint.y == y){
+                body.getPoints().remove(bodySize-i);
+                checkBounds(x, y);
+            }
+        }
+
+        if (legs.size() > 0){
+            int legsSize = legs.size();
+            int lastLegSize = legs.get(legsSize-1).getPoints().size();
+            if  (lastLegSize > 0){
+                Point lastLastLegPoint = legs.get(legsSize-1).get(lastLegSize-1);
+                if (lastLastLegPoint.x == x && lastLastLegPoint.y == y){
+                    if (lastLegSize > 2)
+                        legs.get(legsSize-1).getPoints().remove(lastLegSize - 1);
+                    else
+                        legs.remove(legsSize-1);
+
+                    checkBounds(x, y);
+                }
+            }
+        }
+
+
+    }
+
+    private void checkBounds(double x, double y) {
+        if (front == x){
+            front = 0;
+            for (Point point:body.getPoints())
+                if (point != null && point.x > front) front = point.x;
+
+            for (Figure leg : legs)
+                for (Point point: leg.getPoints()){
+                    if (point != null && point.x > front) front = point.x;
+                }
+        }
+        if (backend == x){
+            backend  = 10000;
+            for (Point point:body.getPoints())
+                if (point != null && point.x < backend) backend = point.x;
+
+            for (Figure leg : legs)
+                for (Point point: leg.getPoints()){
+                    if (point != null && point.x < backend) backend = point.x;
+                }
+        }
+        if (top == y){
+            top  = 10000;
+            for (Point point:body.getPoints())
+                if (point != null && point.y < top) top = point.y;
+
+            for (Figure leg : legs)
+                for (Point point: leg.getPoints()){
+                    if (point != null && point.y < top) top = point.y;
+            }
+        }
+        if (bottom == y){
+            bottom = 0;
+            for (Point point:body.getPoints())
+                if (point != null && point.y > bottom) bottom = point.y;
+
+            for (Figure leg : legs)
+                for (Point point: leg.getPoints()){
+                    if (point != null && point.y > bottom) bottom = point.y;
+                }
+        }
+    }
+
 }

@@ -32,6 +32,10 @@ public class Enemy extends Paint {
         return height;
     }
 
+    public int getWidth() {
+        return width;
+    }
+
     public int getBottom() {
         return bottom;
     }

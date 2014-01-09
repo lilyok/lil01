@@ -9,10 +9,7 @@ import android.graphics.*;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.MotionEvent;
-import android.view.View;
+import android.view.*;
 import android.widget.*;
 import characters.Enemy;
 import characters.Hero;
@@ -44,12 +41,12 @@ public class LilActivity extends Activity {
         helps.add(R.drawable.help5);
         helps.add(R.drawable.help6);
 
-        helpTexts.add("You would have battle with dragons and\nyou can draw heroes on window:\n1) Select 'Body' if it was not selected");
-        helpTexts.add("2) Draw body, head or\nother body parts\nwhich moving in a straight line");
-        helpTexts.add("3) Select 'Legs' and\ndraw legs, tail,\nwings, hair, if you want");
-        helpTexts.add("4) Press wizard button\nfor animate hero\nhero must change color");
-        helpTexts.add("5) Then draw and animate\nother hero, if you want.\nYou can draw new heroes during the game.");
-        helpTexts.add("6) When all heroes is ready press\nStart button. Press Pause button for\npaused game");
+        helpTexts.add("You can draw heroes on window:\n1) Select 'Body' if it was not selected.");
+        helpTexts.add("2) Draw body, head.\n");
+        helpTexts.add("3) Select 'Legs' and\ndraw legs, tails, wings.");
+        helpTexts.add("4) Press wizard button\nfor animate hero.");
+        helpTexts.add("5) Then draw and animate\nother hero.");
+        helpTexts.add("6) When all heroes is ready press Start button.\nPress Pause button for paused game");
 
 
         DisplayMetrics displaymetrics = new DisplayMetrics();
@@ -200,7 +197,7 @@ public class LilActivity extends Activity {
 
     public void startBtnClick(View view) {
         // выводим сообщение
-        Toast.makeText(this, "Зачем вы нажали?", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this, "Зачем вы нажали?", Toast.LENGTH_SHORT).show();
 
         Button button = (Button) view;
         CharSequence text = button.getText();
@@ -308,10 +305,14 @@ class MyView extends View {
     private boolean isInfo = false;
     private long prevTime;
 
+    private GestureDetector gestureDetector;
     // private final int STEP = 10;
 
     public MyView(Context context, int height, TextView scoreTextView, Button startBtn) {
         super(context);
+
+        gestureDetector = new GestureDetector(context, new GestureListener());
+
         setFocusable(true);
         setFocusableInTouchMode(true);
 
@@ -343,50 +344,56 @@ class MyView extends View {
 
     }
 
+
+
     public boolean onTouchEvent(MotionEvent event) {
        // if (!isStart) {
-            int action = event.getAction();
-            switch (action) {
-                case MotionEvent.ACTION_DOWN:
-                    Log.i("MyTag", "ACTION_DOWN");
+        boolean result;
+        result = gestureDetector.onTouchEvent(event);//return the double tap events
+        if(result)
+            return false;
 
-                    if (!isWizard)
-                        hero.add(new Hero());
-                    isWizard = true;
-                    if (isLegs) {
-                        hero.getLast().addPointToNewLeg(event.getX(), event.getY());
-                    } else {
-                        hero.getLast().addPointToBody(event.getX(), event.getY());
-                    }
+        int action = event.getAction();
+        switch (action) {
+            case MotionEvent.ACTION_DOWN:
+                Log.i("MyTag", "ACTION_DOWN");
 
-                    break;
-                case MotionEvent.ACTION_MOVE:
-                    Log.i("MyTag", "ACTION_MOVE");
+                if (!isWizard)
+                    hero.add(new Hero());
+                isWizard = true;
+                if (isLegs) {
+                    hero.getLast().addPointToNewLeg(event.getX(), event.getY());
+                } else {
+                    hero.getLast().addPointToBody(event.getX(), event.getY());
+                }
 
-                    if (!isWizard)
-                        hero.add(new Hero());
-                    isWizard = true;
-                    if (isLegs) {
-                        hero.getLast().addPointToLastLeg(event.getX(), event.getY());
-                    } else {
-                        hero.getLast().addPointToBody(event.getX(), event.getY());
-                    }
+                break;
+            case MotionEvent.ACTION_MOVE:
+                Log.i("MyTag", "ACTION_MOVE");
 
-                    break;
-                case MotionEvent.ACTION_UP:
-                    Log.i("MyTag", "ACTION_UP");
-                    if (isLegs) {
-                        hero.getLast().addPointToLastLeg(null);
-                    } else {
-                        hero.getLast().addPointToBody(null);
-                    }
+                if (!isWizard)
+                    hero.add(new Hero());
+                isWizard = true;
+                if (isLegs) {
+                    hero.getLast().addPointToLastLeg(event.getX(), event.getY());
+                } else {
+                    hero.getLast().addPointToBody(event.getX(), event.getY());
+                }
 
-                    break;
-            }
+                break;
+            case MotionEvent.ACTION_UP:
+                Log.i("MyTag", "ACTION_UP");
+                if (isLegs) {
+            //        hero.getLast().addPointToLastLeg(null);
+                } else {
+                    hero.getLast().addPointToBody(null);
+                }
+
+                break;
+        }
     //    }
         return true;
     }
-
 
     private void calculateRivals(Hero h) {
         double dy = 0;
@@ -456,6 +463,7 @@ class MyView extends View {
         canvasWidth = canvas.getWidth();
 
 
+
         for (Iterator<Hero> iterator = hero.iterator(); iterator.hasNext(); ) {
             Hero h = iterator.next();
 
@@ -480,9 +488,6 @@ class MyView extends View {
                             iterator.remove();
                         }
                     }
-//                } else {
-//                    h.move(false, canvas);
-//                }
             } else {
                 h.move(false, canvas);
             }
@@ -580,8 +585,52 @@ class MyView extends View {
         }
     }
 
+
+    private void animateHero(int numOfHero){
+        isWizard = false;
+
+        Hero h = hero.get(numOfHero);
+        if (h.getStep() == 0) {
+            h.setStep(5);
+            h.fill(Color.rgb((numOfHero%3+1)*89, (numOfHero%2+1)*78, numOfHero*95));
+
+            calculateRivals(h);
+
+            invalidate();
+        }
+    }
+
     public void wizard() {
         isWizard = false;
         animateHero();
+    }
+
+    private class GestureListener extends GestureDetector.SimpleOnGestureListener {
+
+
+        @Override
+        public boolean onSingleTapConfirmed(MotionEvent e) {
+            return true;
+        }
+        // event when double tap occurs
+        @Override
+        public boolean onDoubleTap(MotionEvent e) {
+            float x = e.getX();
+            float y = e.getY();
+
+            hero.getLast().deletePoint(x, y);
+
+            int i = 0;
+            for (Hero h:hero){
+                if (h.getBackend() < x && h.getFront() > x && h.getTop() < y && h.getBottom() > y) {
+                    animateHero(i);
+                    break;
+                }
+                i++;
+            }
+            Log.d("Double Tap", "Tapped at: (" + x + "," + y + ")");
+
+            return true;
+        }
     }
 }
