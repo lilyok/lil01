@@ -171,6 +171,10 @@ public class Hero {
         return shift;
     }
 
+    public void setShift(int shift) {
+        this.shift = shift;
+    }
+
     public int getStep(){
         return step;
     }
@@ -224,13 +228,18 @@ public class Hero {
             int legsSize = legs.size();
             int lastLegSize = legs.get(legsSize-1).getPoints().size();
             if  (lastLegSize > 0){
-                Point lastLastLegPoint = legs.get(legsSize-1).get(lastLegSize-1);
-                if (lastLastLegPoint.x == x && lastLastLegPoint.y == y){
-                    if (lastLegSize > 2)
-                        legs.get(legsSize-1).getPoints().remove(lastLegSize - 1);
-                    else
-                        legs.remove(legsSize-1);
-
+//                Point lastLastLegPoint = legs.get(legsSize-1).get(lastLegSize-1);
+//                if (lastLastLegPoint.x == x && lastLastLegPoint.y == y){
+//                    if (lastLegSize > 2)
+//                        legs.get(legsSize-1).getPoints().remove(lastLegSize - 1);
+//                    else
+//                        legs.remove(legsSize-1);
+//
+//                    checkBounds(x, y);
+//                }
+                boolean res = legs.get(legsSize-1).find(x, y);
+                if (res){
+                    legs.remove(legsSize-1);
                     checkBounds(x, y);
                 }
             }

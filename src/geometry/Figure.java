@@ -78,4 +78,12 @@ public class Figure {
         }
         return res;
     }
+
+    public boolean find(double x, double y) {
+        for (Point p : fig){
+            if (p.x == x && p.y ==y)
+                return true;
+        }
+        return false;
+    }
 }

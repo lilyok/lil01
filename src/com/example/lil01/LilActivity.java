@@ -220,13 +220,6 @@ public class LilActivity extends Activity {
     }
 
 
-    public void wizardBtnClick(View view) {
-        // Toast.makeText(this, Integer.toString(view.getLeft()), Toast.LENGTH_SHORT).show();
-
-        myview.wizard();
-
-    }
-
     public void legsRbtnClick(View view) {
 
         if (lrbtn.isChecked())
