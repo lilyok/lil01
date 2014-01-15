@@ -291,4 +291,7 @@ public class Hero {
         }
     }
 
+    public void damage() {
+        alpha -= 51;
+    }
 }

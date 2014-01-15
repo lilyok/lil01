@@ -58,7 +58,9 @@ public class Enemy extends Paint {
     }
 
     public void move(boolean isMoving, Canvas canvas) {
-        if (this.step == 0){
+        if (this.step == 0 && this.alpha <= 0){
+            this.shift = 0;
+            this.alpha = 255;
             Random rnd = new Random();
             this.step = rnd.nextInt(5) + 5;
         }
@@ -91,11 +93,10 @@ public class Enemy extends Paint {
     public void setDied(){
         if (alpha>0)
             alpha -= 51;
-        else if (alpha == 0){
-            alpha = 255;
-            this.shift = 0;
-            this.step = 0;
-        }
+//        else if (alpha == 0){
+//            this.shift = 0;
+//            this.step = 0;
+//        }
     }
 
     public int getAlpha() {
@@ -104,5 +105,9 @@ public class Enemy extends Paint {
 
     public void setShift(int shift) {
         this.shift = shift;
+    }
+
+    public void damage() {
+        alpha -= 51;
     }
 }
