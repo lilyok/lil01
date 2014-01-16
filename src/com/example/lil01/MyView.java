@@ -173,8 +173,12 @@ class MyView extends View {
         if (isStart && elapsedTime > pauseTime) {
             double dx = -2*canvasWidth;
 
+            boolean isFirstEnemy = true;
             for (Enemy e: enemy){
+                e.randomizeStep();
                 for (Hero h: hero){
+                    if (isFirstEnemy && h.isAnimated())
+                        h.setStep(5);
                     dx = isCollision(canvasWidth, h, e);
                     if (dx >= -1){
                         e.setShift((int) (e.getShift() + e.getStep() -dx/2 + 1));
@@ -183,8 +187,12 @@ class MyView extends View {
                         h.setStep(0);
                         h.damage();
                         e.damage();
+//                        isCollision = true;
                     }
                 }
+                if (isFirstEnemy)
+                    isFirstEnemy = false;
+
             }
             for (Enemy e : enemy) {
                 e.move(true, canvas);
@@ -296,7 +304,7 @@ class MyView extends View {
         if (h.getStep() == 0) {
             h.setStep(5);
             h.fill(Color.rgb((numOfHero % 3 + 1) * 89, (numOfHero % 2 + 1) * 78, numOfHero * 95));
-
+            h.startAnimate();
             invalidate();
             return true;
         }

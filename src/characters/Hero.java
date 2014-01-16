@@ -26,6 +26,7 @@ public class Hero {
     private double top = 10000;
     private int alpha = 255;
     private boolean isMoving = false;
+    private boolean isAnimated = false;
 
     public Hero() {
         body = new Figure();
@@ -293,5 +294,13 @@ public class Hero {
 
     public void damage() {
         alpha -= 51;
+    }
+
+    public void startAnimate() {
+        isAnimated = true;
+    }
+
+    public boolean isAnimated() {
+        return isAnimated;
     }
 }

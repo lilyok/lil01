@@ -61,8 +61,7 @@ public class Enemy extends Paint {
         if (this.step == 0 && this.alpha <= 0){
             this.shift = 0;
             this.alpha = 255;
-            Random rnd = new Random();
-            this.step = rnd.nextInt(5) + 5;
+            randomizeStep();
         }
 
         int srcX = numFrame * width;
@@ -78,6 +77,11 @@ public class Enemy extends Paint {
 
         onDraw(canvas);
 
+    }
+
+    public void randomizeStep() {
+        Random rnd = new Random();
+        this.step = rnd.nextInt(5) + 5;
     }
 
     private void onDraw(Canvas canvas) {
