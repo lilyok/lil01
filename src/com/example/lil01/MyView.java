@@ -31,7 +31,6 @@ class MyView extends View {
     private long prevTime;
 
     private GestureDetector gestureDetector;
-    // private final int STEP = 10;
 
     public MyView(Context context, int height, TextView scoreTextView, Button startBtn) {
         super(context);
@@ -55,12 +54,23 @@ class MyView extends View {
         createEnemies(height);
     }
 
+    private Bitmap intToBmp(int res){
+       return BitmapFactory.decodeResource(getResources(), res);
+    }
+
     private void createEnemies(double height) {
         Random rnd = new Random();
+        final List<Bitmap> enemyPics = new ArrayList<Bitmap>();
+        enemyPics.add(intToBmp(R.drawable.enemy1));
+        enemyPics.add(intToBmp(R.drawable.enemy1a));
+        enemyPics.add(intToBmp(R.drawable.enemy1b));
+        enemyPics.add(intToBmp(R.drawable.enemy1c));
+        enemyPics.add(intToBmp(R.drawable.enemy1d));
+
         Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.enemy1);
         int count = (int)Math.round(height/(double)bmp.getHeight());//3;//rnd.nextInt(height/(3*bmp.getHeight())-1)+1;
         for (int i = 0; i < count-1; i++) {
-            enemy.add(new Enemy(bmp));
+            enemy.add(new Enemy(enemyPics));
             enemy.getLast().setTop(i);
             enemy.getLast().setStep(rnd.nextInt(5) + 5);
         }
@@ -70,7 +80,6 @@ class MyView extends View {
 
 
     public boolean onTouchEvent(MotionEvent event) {
-        // if (!isStart) {
         boolean result;
         result = gestureDetector.onTouchEvent(event);//return the double tap events
         if(result)
@@ -117,7 +126,6 @@ class MyView extends View {
 
                 break;
         }
-        //    }
         return true;
     }
 
@@ -173,25 +181,44 @@ class MyView extends View {
         if (isStart && elapsedTime > pauseTime) {
             double dx = -2*canvasWidth;
 
-            boolean isFirstEnemy = true;
+            Set <Hero> collisionHero = new HashSet<Hero>();
+            //boolean isFirstEnemy = true;
             for (Enemy e: enemy){
-                e.randomizeStep();
+                boolean isCollision = false;
+
+//                e.randomizeStep();
                 for (Hero h: hero){
-                    if (isFirstEnemy && h.isAnimated())
-                        h.setStep(5);
-                    dx = isCollision(canvasWidth, h, e);
-                    if (dx >= -1){
-                        e.setShift((int) (e.getShift() + e.getStep() -dx/2 + 1));
-                        e.setStep(0);
-                        h.setShift((int) (h.getShift() + h.getStep() - dx/2 + 1));
-                        h.setStep(0);
-                        h.damage();
-                        e.damage();
-//                        isCollision = true;
+
+                    if (h.isAnimated()){
+                        dx = isCollision(canvasWidth, h, e);
+
+    //                    if (isFirstEnemy && h.getStep()==0 && h.isAnimated())
+    //                        h.setStep(5);
+
+                        if (dx >= -1){
+                            e.setShift((int) (e.getShift() + e.getStep() -dx/2 + 1));
+                            e.setStep(0);
+                            h.setShift((int) (h.getShift() + h.getStep() - dx/2 + 1));
+                            h.setStep(0);
+                            h.damage();
+                            e.damage();
+                            isCollision = true;
+                            collisionHero.add(h);
+                        }
                     }
+
                 }
-                if (isFirstEnemy)
-                    isFirstEnemy = false;
+
+                if(!isCollision && e.getStep() == 0)
+                    e.randomizeStep();
+
+                if (e.isDied()){
+                    score++;
+                    scoreTextView.setText(score.toString());
+                }
+
+//                if (isFirstEnemy)
+//                    isFirstEnemy = false;
 
             }
             for (Enemy e : enemy) {
@@ -205,8 +232,10 @@ class MyView extends View {
 
             for (Iterator<Hero> iterator = hero.iterator(); iterator.hasNext(); ) {
                 Hero h = iterator.next();
+                if (!collisionHero.contains(h) && h.getStep() == 0 && h.isAnimated())
+                    h.setStep(5);
                 h.move(true, canvas);
-                if (h.getAlpha() <= 0)
+                if (h.isDied())
                     iterator.remove();
             }
 
@@ -220,12 +249,9 @@ class MyView extends View {
             }
         }
 
-
-
         if (isInfo) {
             drawResult(canvas, canvasWidth);
         }
-        drawWindow(canvas, canvasWidth);
     }
 
 
@@ -235,6 +261,7 @@ class MyView extends View {
         paint.setStrokeWidth(3);
         paint.setTextSize(38);
         paint.setStyle(Paint.Style.FILL);
+        paint.setColor(Color.WHITE);
 
         canvas.drawRect(0, 0, startX, height / 2, paint);
         paint.setStyle(Paint.Style.STROKE);
@@ -245,27 +272,6 @@ class MyView extends View {
         if (score > lastScore) record = score;
         canvas.drawText("Score record: "+ record.toString() + " enemies", 30, height/4+45, paint);
 
-    }
-
-    private void drawWindow(Canvas canvas, int canvasWidth) {
-        paint.setStyle(Paint.Style.STROKE);
-
-        paint.setColor(Color.WHITE);
-        paint.setStrokeWidth(15);
-        canvas.drawRect(canvas.getClipBounds(), paint);
-
-        int startX = canvasWidth / 2 - 15;
-        int startX1 = canvasWidth / 2 + 3;
-
-        int height = canvas.getHeight();
-
-        canvas.drawLine(startX, 0, startX, height, paint);
-        canvas.drawLine(startX1, 0, startX1, height, paint);
-
-        paint.setColor(Color.GRAY);
-        paint.setStrokeWidth(5);
-        canvas.drawRect(startX - 7, height / 3, startX + 7, height / 3 + 40, paint);
-        canvas.drawRect(startX1 - 7, height / 3, startX1 + 7, height / 3 + 40, paint);
     }
 
     public void start(int lastScore) {

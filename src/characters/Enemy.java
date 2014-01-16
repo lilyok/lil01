@@ -2,10 +2,14 @@ package characters;
 
 import android.graphics.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class Enemy extends Paint {
-    private Bitmap bmp;
+    final private List<Bitmap> bitmaps = new ArrayList<Bitmap>();
+    private int bmpIndex = 0;
+//    private Bitmap bmp;
     private int shift = 0;
     private int step = 0;
     private int numFrame = 0;
@@ -28,10 +32,6 @@ public class Enemy extends Paint {
         this.step = step;
     }
 
-    public int getHeight() {
-        return height;
-    }
-
     public int getWidth() {
         return width;
     }
@@ -51,14 +51,16 @@ public class Enemy extends Paint {
     private Rect src = new Rect();
     private Rect dst = new Rect();
 
-    public Enemy(Bitmap b) {
-        bmp = b;
+    public Enemy(List<Bitmap> b) {
+        bitmaps.addAll(b);
+        Bitmap bmp = b.get(0);
         width = bmp.getWidth() / COL_COUNT;
         height = bmp.getHeight();
     }
 
     public void move(boolean isMoving, Canvas canvas) {
-        if (this.step == 0 && this.alpha <= 0){
+        if (this.step == 0 && isDied()){
+            bmpIndex = 0;
             this.shift = 0;
             this.alpha = 255;
             randomizeStep();
@@ -71,7 +73,6 @@ public class Enemy extends Paint {
 
         if (isMoving) {
             this.shift += step;
-//            if (this.shift / step % 7 == 0)
             numFrame = ++numFrame % 3;
         }
 
@@ -87,24 +88,14 @@ public class Enemy extends Paint {
     private void onDraw(Canvas canvas) {
         Paint paint=new Paint();
         paint.setAlpha(alpha);
-        canvas.drawBitmap(bmp, src, dst, paint);
+        canvas.drawBitmap(bitmaps.get(bmpIndex), src, dst, paint);
     }
 
-    public Bitmap getBmp() {
-        return bmp;
-    }
 
-    public void setDied(){
-        if (alpha>0)
-            alpha -= 51;
-//        else if (alpha == 0){
-//            this.shift = 0;
-//            this.step = 0;
-//        }
-    }
-
-    public int getAlpha() {
-        return alpha;
+    public boolean isDied() {
+        if (bmpIndex >= bitmaps.size())
+            return true;
+        return false;
     }
 
     public void setShift(int shift) {
@@ -112,6 +103,10 @@ public class Enemy extends Paint {
     }
 
     public void damage() {
-        alpha -= 51;
+        alpha -= 1;
+        if (bmpIndex > bitmaps.size()/2)
+            alpha -= 50;
+        if (alpha % 2 == 0)
+            bmpIndex++;
     }
 }

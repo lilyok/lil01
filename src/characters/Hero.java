@@ -28,6 +28,8 @@ public class Hero {
     private boolean isMoving = false;
     private boolean isAnimated = false;
 
+    private int numberOfBroken = 0;
+
     public Hero() {
         body = new Figure();
         legs = new ArrayList<Figure>();
@@ -50,29 +52,16 @@ public class Hero {
         setBounds(x, y);
     }
 
-    public void addPointToNewLeg(Point p) {
-        legs.add(new Figure(p));
-        if (p != null)
-            setBounds(p.x, p.y);
-    }
-
     public void addPointToNewLeg(double x, double y) {
         legs.add(new Figure(new Point(x, y, Color.rgb(250, 0, 250))));
         setBounds(x, y);
 
     }
 
-    public void addPointToLastLeg(Point p) {
-        Figure last = legs.get(legs.size() - 1);
-        last.add(p);
-        if (p != null)
-            setBounds(p.x, p.y);//last.get(0).y + last.getMostRemoteFromStartPoint());
-    }
-
     public void addPointToLastLeg(double x, double y) {
         Figure last = legs.get(legs.size() - 1);
         last.add(new Point(x, y, Color.rgb(250, 0, 250)));
-        setBounds(x, y);//last.get(0).y + last.getMostRemoteFromStartPoint());
+        setBounds(x, y);
     }
 
 
@@ -81,15 +70,6 @@ public class Hero {
         if (y < top) top = y;
         if (x > front) front = x;
         if ( x < backend) backend = x;
-    }
-
-    public List<Double> getBounds() {
-        List <Double> res = new ArrayList<Double>(){{
-            add(front);
-            add(top);
-            add(bottom);
-        }};
-        return res;
     }
 
     public double getFront() {
@@ -142,18 +122,20 @@ public class Hero {
         }
     }
 
-
     public List<Point> getPoints() {
         List<Point> res = new ArrayList<Point>();
         boolean isLeft = !isRight;
+        int legIndex = 0;
         for (Figure leg : legs) {
-            if (isRight)
+            if (isRight && legIndex >= numberOfBroken)
                 res.addAll(leg.rotatePoints(phi));
             else
                 res.addAll(leg.clonePoints());
             res.add(null);
 
             isRight = !isRight;
+
+            legIndex++;
         }
         if (isMoving && this.phi <= 0)
             isRight = isLeft;
@@ -184,14 +166,9 @@ public class Hero {
         this.step = step;
     }
 
-    public void setDied() {
-        if (alpha >0)
-            alpha -= 51;
-    }
-
-    public int getAlpha(){
-        return alpha;
-    }
+//    public int getAlpha(){
+//        return alpha;
+//    }
 
     public void fill(int color){
         for (Point p : body.getPoints()) {
@@ -229,15 +206,6 @@ public class Hero {
             int legsSize = legs.size();
             int lastLegSize = legs.get(legsSize-1).getPoints().size();
             if  (lastLegSize > 0){
-//                Point lastLastLegPoint = legs.get(legsSize-1).get(lastLegSize-1);
-//                if (lastLastLegPoint.x == x && lastLastLegPoint.y == y){
-//                    if (lastLegSize > 2)
-//                        legs.get(legsSize-1).getPoints().remove(lastLegSize - 1);
-//                    else
-//                        legs.remove(legsSize-1);
-//
-//                    checkBounds(x, y);
-//                }
                 boolean res = legs.get(legsSize-1).find(x, y);
                 if (res){
                     legs.remove(legsSize-1);
@@ -292,8 +260,24 @@ public class Hero {
         }
     }
 
+    public boolean isDied(){
+        if (numberOfBroken >= legs.size())
+            return true;
+        return false;
+    }
+
     public void damage() {
-        alpha -= 51;
+        alpha -= 1;
+        if ((legs.size() - numberOfBroken)*55 <= alpha && legs.size()- numberOfBroken < 4)
+            alpha -= 50;
+        double dy = bottom - legs.get(numberOfBroken).get(0).y;
+
+        for (Point p : legs.get(numberOfBroken).getPoints()){
+            p.y += dy;
+        }
+
+        numberOfBroken++;
+
     }
 
     public void startAnimate() {
