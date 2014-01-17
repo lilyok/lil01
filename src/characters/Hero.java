@@ -143,9 +143,12 @@ public class Hero {
             isRight = !isLeft;
 
         res.addAll(body.clonePoints());
+
+
         for (Point r : res) {
-            if (r != null)
+            if (r != null){
                 r.x += shift;
+            }
         }
         return res;
     }
@@ -272,11 +275,14 @@ public class Hero {
             alpha -= 50;
         double dy = bottom - legs.get(numberOfBroken).get(0).y;
 
+        boolean isFirst = true;
         for (Point p : legs.get(numberOfBroken).getPoints()){
-            p.y += dy;
+            if(!isFirst)
+                p.y += dy;
+            isFirst = false;
         }
-
-        numberOfBroken++;
+        if (alpha % 2 == 0)
+            numberOfBroken++;
 
     }
 
