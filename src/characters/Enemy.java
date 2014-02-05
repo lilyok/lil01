@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Random;
 
 public class Enemy extends Paint {
-    final private List<Bitmap> bitmaps = new ArrayList<Bitmap>();
+    private List<Bitmap> bitmaps = new ArrayList<Bitmap>();
     private int bmpIndex = 0;
 //    private Bitmap bmp;
     private int shift = 0;
@@ -19,6 +19,7 @@ public class Enemy extends Paint {
     private int top = 0;
     private int bottom = 0;
     private int alpha = 255;
+
 
     public int getShift() {
         return shift;
@@ -59,7 +60,7 @@ public class Enemy extends Paint {
     }
 
     public void move(boolean isMoving, Canvas canvas) {
-        if (this.step == 0 && isDied()){
+        if (isDied()){
             bmpIndex = 0;
             this.shift = 0;
             this.alpha = 255;
@@ -98,6 +99,10 @@ public class Enemy extends Paint {
         return false;
     }
 
+    public void makeDied(){
+        bmpIndex = bitmaps.size();
+    }
+
     public void setShift(int shift) {
         this.shift = shift;
     }
@@ -106,7 +111,12 @@ public class Enemy extends Paint {
         alpha -= 1;
         if (bmpIndex > bitmaps.size()/2)
             alpha -= 50;
-        if (alpha % 2 == 0)
+      //  if (alpha % 2 == 0)
             bmpIndex++;
+    }
+
+
+    public void setBitmaps(List<Bitmap> bitmaps) {
+        this.bitmaps = bitmaps;
     }
 }

@@ -35,7 +35,7 @@ public class Figure {
         List<Point> res = new ArrayList<Point>();
         for (Point p : fig) {
             if (p != null)
-                res.add(new Point(p.x, p.y, p.c));
+                res.add(new Point(p.x, p.y, p.c, p.alpha));
             else
                 res.add(null);
         }
@@ -54,7 +54,7 @@ public class Figure {
 
 
     private Point rotatePoint(Point p, double cx, double cy, double phi) {
-        Point pres = new Point(p.x, p.y, p.c);
+        Point pres = new Point(p.x, p.y, p.c, p.alpha);
 
         double dx = p.x - cx;
         double dy = p.y - cy;

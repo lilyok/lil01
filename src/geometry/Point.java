@@ -4,6 +4,7 @@ import android.graphics.Color;
 
 public class Point {
     public int c;
+    public int alpha = 255;
     public double x;
     public double y;
 
@@ -13,10 +14,11 @@ public class Point {
         this.c = Color.WHITE;
     }
 
-    public Point(double x, double y, int c) {
+    public Point(double x, double y, int c, int a) {
         this.x = x;
         this.y = y;
         this.c = c;
+        this.alpha = a;
     }
 
     public float fx() {

@@ -14,6 +14,8 @@ import characters.Hero;
 import java.util.*;
 
 class MyView extends View {
+    private final int enemySideLength;
+    private final int bonusSideLength;
     private Paint paint;
     private Button startBtn;
     private TextView scoreTextView;
@@ -28,12 +30,19 @@ class MyView extends View {
     private boolean isWizard = false;
 
     private boolean isInfo = false;
-    private long prevTime;
+    private int indexOfBonus = -1;
 
+    private long prevTime;
+    private List<Point> listPosOfBonus = new ArrayList<Point>();
     private GestureDetector gestureDetector;
+
+    final List<Bitmap> enemyPics;
 
     public MyView(Context context, int height, TextView scoreTextView, Button startBtn) {
         super(context);
+
+        enemySideLength = BitmapFactory.decodeResource(getResources(), R.drawable.enemy1).getHeight();
+        bonusSideLength = BitmapFactory.decodeResource(getResources(), R.drawable.christmasgifticon).getWidth();
 
         gestureDetector = new GestureDetector(context, new GestureListener());
 
@@ -51,79 +60,112 @@ class MyView extends View {
 
         hero = new LinkedList<Hero>();
         enemy = new LinkedList<Enemy>();
+        enemyPics = new ArrayList<Bitmap>();
         createEnemies(height);
     }
 
-    private Bitmap intToBmp(int res){
-       return BitmapFactory.decodeResource(getResources(), res);
+    private Bitmap intToBmp(int res) {
+        return BitmapFactory.decodeResource(getResources(), res);
     }
 
     private void createEnemies(double height) {
         Random rnd = new Random();
-        final List<Bitmap> enemyPics = new ArrayList<Bitmap>();
         enemyPics.add(intToBmp(R.drawable.enemy1));
         enemyPics.add(intToBmp(R.drawable.enemy1a));
         enemyPics.add(intToBmp(R.drawable.enemy1b));
         enemyPics.add(intToBmp(R.drawable.enemy1c));
         enemyPics.add(intToBmp(R.drawable.enemy1d));
 
-        Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.enemy1);
-        int count = (int)Math.round(height/(double)bmp.getHeight());//3;//rnd.nextInt(height/(3*bmp.getHeight())-1)+1;
-        for (int i = 0; i < count-1; i++) {
-            enemy.add(new Enemy(enemyPics));
+        enemyPics.add(intToBmp(R.drawable.enemy2));
+        enemyPics.add(intToBmp(R.drawable.enemy2a));
+        enemyPics.add(intToBmp(R.drawable.enemy2b));
+        enemyPics.add(intToBmp(R.drawable.enemy2c));
+        enemyPics.add(intToBmp(R.drawable.enemy2d));
+
+        enemyPics.add(intToBmp(R.drawable.enemy3));
+        enemyPics.add(intToBmp(R.drawable.enemy3a));
+        enemyPics.add(intToBmp(R.drawable.enemy3b));
+        enemyPics.add(intToBmp(R.drawable.enemy3c));
+        enemyPics.add(intToBmp(R.drawable.enemy3d));
+
+
+//        Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.enemy1);
+        int count = (int) Math.round(height / (double) enemySideLength);//bmp.getHeight());//3;//rnd.nextInt(height/(3*bmp.getHeight())-1)+1;
+        for (int i = 0; i < count - 1; i++) {
+            int typeOfDragon = rnd.nextInt(100) % 3;
+            enemy.add(new Enemy(enemyPics.subList(typeOfDragon * 5, typeOfDragon * 5 + 5)));
             enemy.getLast().setTop(i);
-            enemy.getLast().setStep(rnd.nextInt(5) + 5);
+            enemy.getLast().setStep(i + 5);
         }
 
     }
 
 
+    private int indexOfBonusPoint(double x, double y) {
+        for (int i = 0; i < listPosOfBonus.size(); i++) {
+            final int x1 = listPosOfBonus.get(i).x;
+            if ((x1 < x) && (x1 + bonusSideLength > x)) {
+                final int y1 = listPosOfBonus.get(i).y;
+                if ((y1 < y) && (y1 + bonusSideLength > y))
+                    return i;
+            }
+        }
+        return -1;
+    }
 
     public boolean onTouchEvent(MotionEvent event) {
         boolean result;
         result = gestureDetector.onTouchEvent(event);//return the double tap events
-        if(result)
+        if (result)
             return false;
 
         int action = event.getAction();
+        final float x = event.getX();
+        final float y = event.getY();
         switch (action) {
             case MotionEvent.ACTION_DOWN:
                 Log.i("MyTag", "ACTION_DOWN");
-
-                if (!isWizard)
-                    hero.add(new Hero());
-                isWizard = true;
-                if (isLegs) {
-                    ifNoHeroNewHero();
-                    hero.getLast().addPointToNewLeg(event.getX(), event.getY());
-                } else {
-                    ifNoHeroNewHero();
-                    hero.getLast().addPointToBody(event.getX(), event.getY());
+                indexOfBonus = indexOfBonusPoint(x, y);
+                if (indexOfBonus == -1){
+                    if (!isWizard)
+                        hero.add(new Hero());
+                    isWizard = true;
+                    if (isLegs) {
+                        ifNoHeroNewHero();
+                        hero.getLast().addPointToNewLeg(x, y);
+                    } else {
+                        ifNoHeroNewHero();
+                        hero.getLast().addPointToBody(x, y);
+                    }
                 }
-
                 break;
             case MotionEvent.ACTION_MOVE:
                 Log.i("MyTag", "ACTION_MOVE");
 
-                if (!isWizard)
-                    hero.add(new Hero());
-                isWizard = true;
-                if (isLegs) {
-                    ifNoHeroNewHero();
-                    hero.getLast().addPointToLastLeg(event.getX(), event.getY());
-                } else {
-                    ifNoHeroNewHero();
-                    hero.getLast().addPointToBody(event.getX(), event.getY());
+                if (indexOfBonus == -1) {
+                    if (!isWizard)
+                        hero.add(new Hero());
+                    isWizard = true;
+                    if (isLegs) {
+                        ifNoHeroNewHero();
+                        hero.getLast().addPointToLastLeg(x, y);
+                    } else {
+                        ifNoHeroNewHero();
+                        hero.getLast().addPointToBody(x, y);
+                    }
                 }
-
                 break;
             case MotionEvent.ACTION_UP:
                 Log.i("MyTag", "ACTION_UP");
-                if (!isLegs) {
-                    ifNoHeroNewHero();
-                    hero.getLast().addPointToBody(null);
+                if (indexOfBonus == -1){
+                    if (!isLegs) {
+                        ifNoHeroNewHero();
+                        hero.getLast().addPointToBody(null);
+                    }
+                } else {
+                    listPosOfBonus.remove(indexOfBonus);
+                    indexOfBonus = -1;
                 }
-
                 break;
         }
         return true;
@@ -135,30 +177,25 @@ class MyView extends View {
     }
 
 
-
     private double isCollision(int canvasWidth, Hero h, Enemy e) {
-        double dx = -2*canvasWidth;
+        double dx = -2 * canvasWidth;
         final double heroTop = h.getTop();
         final double heroBottom = h.getBottom();
         final int enemyTop = e.getTop();
         boolean isCanCollision = false;
         final int enemyBottom = e.getBottom();
-        if ((enemyTop <= heroTop) && (enemyBottom >= heroBottom)) {
+        if ((enemyTop <= heroTop) && (enemyBottom >= heroTop)) {
+            isCanCollision = true;
+        } else if ((enemyTop <= heroBottom) && (enemyBottom >= heroBottom)) {
             isCanCollision = true;
         } else if ((enemyTop >= heroTop) && (enemyBottom <= heroBottom)) {
             isCanCollision = true;
-        } else if ((enemyTop <= heroTop) && (enemyBottom >= heroTop)) {
-            double dyTmp = -heroTop + enemyBottom;
-            if (dyTmp > (heroBottom - heroTop)/3) isCanCollision = true;
-
-        } else if ((enemyTop <= heroBottom) && (enemyBottom >= heroBottom)) {
-            double dyTmp = -enemyTop + heroBottom;
-            if (dyTmp > (heroBottom - heroTop)/3) isCanCollision = true;
         }
-        if (isCanCollision && h.getBackend() < canvasWidth - e.getShift() + e.getWidth()){
+
+        if (isCanCollision && h.getBackend() < canvasWidth - e.getShift() + e.getWidth()) {
             double oldDx = h.getFront() + h.getShift() - (canvasWidth - e.getShift());
-           // if (oldDx < 0)
-                dx = oldDx + h.getStep() + e.getStep();
+            // if (oldDx < 0)
+            dx = oldDx + h.getStep() + e.getStep();
         }
         return dx;
     }
@@ -169,58 +206,67 @@ class MyView extends View {
         long elapsedTime = now - prevTime;
         int pauseTime = 100;
         if (elapsedTime > pauseTime)
-            prevTime =  now;
+            prevTime = now;
 
         super.onDraw(canvas);
         invalidate();
 
 
         canvasWidth = canvas.getWidth();
+        int canvasHeight = canvas.getHeight();
 
+        //draw Bonus
+        for (Point p : listPosOfBonus) {
+            canvas.drawBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.christmasgifticon), p.x, p.y, paint);
+        }
 
         if (isStart && elapsedTime > pauseTime) {
-            double dx = -2*canvasWidth;
+            double dx;
+            Set<Hero> collisionHero = new HashSet<Hero>();
 
-            Set <Hero> collisionHero = new HashSet<Hero>();
-            //boolean isFirstEnemy = true;
-            for (Enemy e: enemy){
+            //check collision
+            for (Enemy e : enemy) {
                 boolean isCollision = false;
 
-//                e.randomizeStep();
-                for (Hero h: hero){
+                for (Hero h : hero) {
 
-                    if (h.isAnimated()){
+                    if (h.isAnimated()) {
                         dx = isCollision(canvasWidth, h, e);
 
-    //                    if (isFirstEnemy && h.getStep()==0 && h.isAnimated())
-    //                        h.setStep(5);
-
-                        if (dx >= -1){
-                            e.setShift((int) (e.getShift() + e.getStep() -dx/2 + 1));
+                        if (dx >= -1) { //fight
+                            e.setShift((int) (e.getShift() + e.getStep() - dx / 2 + 1));
                             e.setStep(0);
-                            h.setShift((int) (h.getShift() + h.getStep() - dx/2 + 1));
+                            h.setShift((int) (h.getShift() + h.getStep() - dx / 2 + 1));
                             h.setStep(0);
                             h.damage();
                             e.damage();
                             isCollision = true;
                             collisionHero.add(h);
                         }
+                        if (e.isDied()) {
+                            h.countDeadEnemies++;
+                            break;
+                        }
+
                     }
 
                 }
 
-                if(!isCollision && e.getStep() == 0)
+                //if hero dead, enemy continue gone
+                if (!isCollision && e.getStep() == 0)
                     e.randomizeStep();
-
-                if (e.isDied()){
+                //if enemy dead
+                if (e.isDied()) {
                     score++;
+                    Random rnd = new Random();
+                    int typeOfDragon = rnd.nextInt(100) % 3;
+                    e.setBitmaps(enemyPics.subList(typeOfDragon * 5, typeOfDragon * 5 + 5));
                     scoreTextView.setText(score.toString());
+
                 }
-
-//                if (isFirstEnemy)
-//                    isFirstEnemy = false;
-
             }
+
+            //draw enemies
             for (Enemy e : enemy) {
                 e.move(true, canvas);
                 if (e.getShift() >= canvasWidth) {
@@ -230,8 +276,13 @@ class MyView extends View {
                 }
             }
 
+            //draw heroes
             for (Iterator<Hero> iterator = hero.iterator(); iterator.hasNext(); ) {
                 Hero h = iterator.next();
+                if (h.countDeadEnemies >= 2) {
+                    listPosOfBonus.add(new Point((int) (h.getShift() + h.getBackend()), (int) h.getTop()));
+                    h.countDeadEnemies = 0;
+                }
                 if (!collisionHero.contains(h) && h.getStep() == 0 && h.isAnimated())
                     h.setStep(5);
                 h.move(true, canvas);
@@ -240,14 +291,15 @@ class MyView extends View {
             }
 
 
-        } else {
+        } else {  //draw stopped heroes and enemies
             for (Enemy e : enemy)
                 e.move(false, canvas);
 
-            for (Hero h : hero ) {
+            for (Hero h : hero) {
                 h.move(false, canvas);
             }
         }
+
 
         if (isInfo) {
             drawResult(canvas, canvasWidth);
@@ -270,19 +322,18 @@ class MyView extends View {
 
         Integer record = lastScore;
         if (score > lastScore) record = score;
-        canvas.drawText("Score record: "+ record.toString() + " enemies", 30, height/4+45, paint);
+        canvas.drawText("Score record: " + record.toString() + " enemies", 30, height / 4 + 45, paint);
 
     }
 
     public void start(int lastScore) {
-        if (lastScore > 0 )
+        if (lastScore > 0)
             this.lastScore = lastScore;
         isStart = !isStart;
-        if (isInfo){
+        if (isInfo) {
             hero.clear();
             for (Enemy e : enemy) {
-                e.setShift(0);
-                e.setStep(0);
+                e.makeDied();
             }
             isInfo = false;
             score = 0;
@@ -290,21 +341,8 @@ class MyView extends View {
         }
     }
 
-    private boolean animateHero(){
-        int heroSize = hero.size();
-        if (heroSize > 0 && hero.getLast().getStep() == 0) {
-            Hero h = hero.getLast();
-            h.setStep(5);
-            h.fill(Color.rgb((heroSize%3+1)*89, (heroSize%2+1)*78, heroSize*95));
 
-            invalidate();
-            return true;
-        }
-        return false;
-    }
-
-
-    private boolean animateHero(int numOfHero){
+    private boolean animateHero(int numOfHero) {
 
         Hero h = hero.get(numOfHero);
         if (h.getStep() == 0) {
@@ -325,6 +363,7 @@ class MyView extends View {
         public boolean onSingleTapConfirmed(MotionEvent e) {
             return true;
         }
+
         // event when double tap occurs
         @Override
         public boolean onDoubleTap(MotionEvent e) {
@@ -334,7 +373,7 @@ class MyView extends View {
             hero.getLast().deletePoint(x, y);
 
             int i = 0;
-            for (Hero h:hero){
+            for (Hero h : hero) {
                 if (h.getBackend() < x && h.getFront() > x && h.getTop() < y && h.getBottom() > y) {
                     if (animateHero(i)) {
                         isWizard = false;

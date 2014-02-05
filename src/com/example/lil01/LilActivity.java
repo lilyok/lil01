@@ -26,7 +26,8 @@ public class LilActivity extends Activity {
     private TextView score;
     private final String FILENAME = "score.log";
     private final List<Integer> helps = new ArrayList<Integer>();
-    private final List <String> helpTexts = new ArrayList<String>();
+    private final List<String> helpTexts = new ArrayList<String>();
+
     /**
      * Called when the activity is first created.
      */
@@ -75,7 +76,7 @@ public class LilActivity extends Activity {
         alertDialog.setMessage("Do you want exit?");
 
         alertDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog,int which) {
+            public void onClick(DialogInterface dialog, int which) {
                 Intent intent = new Intent(Intent.ACTION_MAIN);
                 intent.addCategory(Intent.CATEGORY_HOME);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -99,11 +100,10 @@ public class LilActivity extends Activity {
     }
 
 
-
-    public void helpBtnClick(final View view){
+    public void helpBtnClick(final View view) {
         Toast.makeText(this, "тут будет справка", Toast.LENGTH_SHORT).show();
         final AlertDialog.Builder alertHelpBuilder = new AlertDialog.Builder(this);
-       // alertHelpBuilder.setTitle("Help");
+        // alertHelpBuilder.setTitle("Help");
 
 
         final View helpView = new View(this);
@@ -140,7 +140,7 @@ public class LilActivity extends Activity {
 
             public void onClick(View v) {
                 int i = picNum.get();
-                if (i > 0){
+                if (i > 0) {
                     i = picNum.decrementAndGet();
                     if (i == 4)
                         nextBtn.setEnabled(true);
@@ -158,7 +158,7 @@ public class LilActivity extends Activity {
 
             public void onClick(View v) {
                 int i = picNum.get();
-                if (i < 5){
+                if (i < 5) {
                     i = picNum.incrementAndGet();
                     if (i == 1)
                         backBtn.setEnabled(true);
@@ -202,7 +202,7 @@ public class LilActivity extends Activity {
         Button button = (Button) view;
         CharSequence text = button.getText();
         int lastScore = readScore();
-        if ("Start".equals(text)){
+        if ("Start".equals(text)) {
             button.setText("Pause");
         } else {
             button.setText("Start");
@@ -213,9 +213,9 @@ public class LilActivity extends Activity {
 
     private void recalculateScore(int lastScore) {
         Integer currentScore = Integer.valueOf(score.getText().toString());
-        if (currentScore > lastScore){
+        if (currentScore > lastScore) {
             writeScore(currentScore.toString());
-            Toast.makeText(this, "Новый рекорд "+currentScore.toString(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Новый рекорд " + currentScore.toString(), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -261,7 +261,7 @@ public class LilActivity extends Activity {
             String str = "";
             // читаем содержимое
             str = br.readLine();
-            try{
+            try {
                 int res = Integer.valueOf(str.trim());
                 return res;
             } catch (NumberFormatException e) {

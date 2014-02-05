@@ -29,6 +29,7 @@ public class Hero {
     private boolean isAnimated = false;
 
     private int numberOfBroken = 0;
+    public int countDeadEnemies = 0;
 
     public Hero() {
         body = new Figure();
@@ -48,19 +49,19 @@ public class Hero {
     }
 
     public void addPointToBody(double x, double y) {
-        body.add(new Point(x, y, Color.rgb(0, 250, 250)));
+        body.add(new Point(x, y, Color.rgb(0, 250, 250), 255));
         setBounds(x, y);
     }
 
     public void addPointToNewLeg(double x, double y) {
-        legs.add(new Figure(new Point(x, y, Color.rgb(250, 0, 250))));
+        legs.add(new Figure(new Point(x, y, Color.rgb(250, 0, 250), 255)));
         setBounds(x, y);
 
     }
 
     public void addPointToLastLeg(double x, double y) {
         Figure last = legs.get(legs.size() - 1);
-        last.add(new Point(x, y, Color.rgb(250, 0, 250)));
+        last.add(new Point(x, y, Color.rgb(250, 0, 250), 255));
         setBounds(x, y);
     }
 
@@ -113,7 +114,7 @@ public class Hero {
                 if (currPoint != null) {
                     if (p.x < canvas.getWidth()) {
                         paint.setColor(currPoint.c);
-                        paint.setAlpha(alpha);
+                        paint.setAlpha(currPoint.alpha);
                         canvas.drawLine(currPoint.fx(), currPoint.fy(), p.fx(), p.fy(), paint);
                     }
                 }
@@ -271,15 +272,11 @@ public class Hero {
 
     public void damage() {
         alpha -= 1;
-        if ((legs.size() - numberOfBroken)*55 <= alpha && legs.size()- numberOfBroken < 4)
-            alpha -= 50;
-        double dy = bottom - legs.get(numberOfBroken).get(0).y;
 
-        boolean isFirst = true;
-        for (Point p : legs.get(numberOfBroken).getPoints()){
-            if(!isFirst)
-                p.y += dy;
-            isFirst = false;
+        if (numberOfBroken < legs.size())  {
+            for (Point p : legs.get(numberOfBroken).getPoints()){
+                p.alpha = 51;
+            }
         }
         if (alpha % 2 == 0)
             numberOfBroken++;
