@@ -42,6 +42,14 @@ public class Hero {
         paint.setStrokeWidth(5);
     }
 
+    public Hero clone(){
+        Hero h = new Hero();
+        for (Figure leg : legs) {
+            h.legs.add(new Figure(leg.clonePoints()));
+        }
+        return h;
+    }
+
     public void addPointToBody(Point p) {
         body.add(p);
         if (p != null)

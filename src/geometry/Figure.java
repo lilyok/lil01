@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Figure {
-    private ArrayList<Point> fig;
+    private List<Point> fig;
 
     public Figure() {
         fig = new ArrayList<Point>();
@@ -15,7 +15,7 @@ public class Figure {
         fig.add(p);
     }
 
-    public Figure(ArrayList<Point> ps) {
+    public Figure(List<Point> ps) {
         fig = ps;
     }
 

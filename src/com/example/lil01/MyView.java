@@ -31,6 +31,7 @@ class MyView extends View {
 
     private boolean isInfo = false;
     private int indexOfBonus = -1;
+//    private Hero lastHero = null;
 
     private long prevTime;
     private List<Point> listPosOfBonus = new ArrayList<Point>();
@@ -165,6 +166,9 @@ class MyView extends View {
                 } else {
                     listPosOfBonus.remove(indexOfBonus);
                     indexOfBonus = -1;
+//                    lastHero.setShift(0);
+                    hero.add(hero.getLast().clone());
+                    animateHero(hero.size() - 1);
                 }
                 break;
         }
@@ -372,16 +376,19 @@ class MyView extends View {
 
             hero.getLast().deletePoint(x, y);
 
-            int i = 0;
-            for (Hero h : hero) {
+           // int i = 0;
+           // for (Hero h : hero) {
+            Hero h = hero.getLast();
                 if (h.getBackend() < x && h.getFront() > x && h.getTop() < y && h.getBottom() > y) {
-                    if (animateHero(i)) {
+                    if (animateHero(hero.size()-1)) {
                         isWizard = false;
-                        break;
+                  //      break;
                     }
                 }
-                i++;
-            }
+            //    i++;
+            //}
+//            lastHero = hero.getLast().clone();
+
             Log.d("MyTag", "Double tapped at: (" + x + "," + y + ")");
 
             return true;
