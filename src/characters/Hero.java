@@ -42,11 +42,15 @@ public class Hero {
         paint.setStrokeWidth(5);
     }
 
-    public Hero clone(){
+    public Hero copy(){
         Hero h = new Hero();
         for (Figure leg : legs) {
             h.legs.add(new Figure(leg.clonePoints()));
         }
+        h.bottom = this.bottom;
+        h.top = this.top;
+        h.front = this.front;
+        h.backend = this.backend;
         return h;
     }
 
