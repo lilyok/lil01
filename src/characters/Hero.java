@@ -207,12 +207,12 @@ public class Hero {
         if (bodySize > 0){
             int i = 1;
             Point lastBodyPoint = body.get(bodySize-i);
-            while (lastBodyPoint == null){
+            while (i < bodySize && lastBodyPoint == null){
                 i++;
                 lastBodyPoint = body.get(bodySize-i);
             }
 
-            if (lastBodyPoint.x == x && lastBodyPoint.y == y){
+            if (lastBodyPoint != null&&lastBodyPoint.x == x && lastBodyPoint.y == y){
                 body.getPoints().remove(bodySize-i);
                 checkBounds(x, y);
             }

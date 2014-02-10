@@ -21,8 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class LilActivity extends Activity {
     private MyView myview;
-    private RadioButton brbtn;
-    private RadioButton lrbtn;
+
     private TextView score;
     private final String FILENAME = "score.log";
     private final List<Integer> helps = new ArrayList<Integer>();
@@ -55,8 +54,7 @@ public class LilActivity extends Activity {
         int height = displaymetrics.heightPixels;
 
         setContentView(R.layout.main);
-        brbtn = (RadioButton) findViewById(R.id.rBody);
-        lrbtn = (RadioButton) findViewById(R.id.rLegs);
+
         score = (TextView) findViewById(R.id.tvScore);
         Button start = (Button) findViewById(R.id.startBtn);
 
@@ -217,23 +215,6 @@ public class LilActivity extends Activity {
             writeScore(currentScore.toString());
             Toast.makeText(this, "Новый рекорд " + currentScore.toString(), Toast.LENGTH_SHORT).show();
         }
-    }
-
-
-    public void legsRbtnClick(View view) {
-
-        if (lrbtn.isChecked())
-            brbtn.setChecked(false);
-
-        myview.isLegs = true;
-
-    }
-
-    public void bodyRbtnClick(View view) {
-        if (brbtn.isChecked())
-            lrbtn.setChecked(false);
-
-        myview.isLegs = false;
     }
 
     void writeScore(String currentScore) {

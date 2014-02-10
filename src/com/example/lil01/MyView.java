@@ -21,11 +21,9 @@ class MyView extends View {
     private TextView scoreTextView;
     private Integer score = 0;
     private Integer lastScore = 0;
-    // private int canvasWidth = 0;
     private LinkedList<Hero> hero;
     private Deque<Enemy> enemy;
 
-    public boolean isLegs = false;
     private boolean isStart = false;
     private boolean isWizard = false;
 
@@ -135,13 +133,10 @@ class MyView extends View {
                     if (!isWizard)
                         hero.add(new Hero());
                     isWizard = true;
-                    if (isLegs) {
-                        ifNoHeroNewHero();
-                        hero.getLast().addPointToNewLeg(x, y);
-                    } else {
-                        ifNoHeroNewHero();
-                        hero.getLast().addPointToBody(x, y);
-                    }
+
+                    ifNoHeroNewHero();
+                    hero.getLast().addPointToNewLeg(x, y);
+
                 }
                 break;
             case MotionEvent.ACTION_MOVE:
@@ -151,22 +146,16 @@ class MyView extends View {
                     if (!isWizard)
                         hero.add(new Hero());
                     isWizard = true;
-                    if (isLegs) {
-                        ifNoHeroNewHero();
-                        hero.getLast().addPointToLastLeg(x, y);
-                    } else {
-                        ifNoHeroNewHero();
-                        hero.getLast().addPointToBody(x, y);
-                    }
+                    ifNoHeroNewHero();
+                    hero.getLast().addPointToLastLeg(x, y);
+
                 }
                 break;
             case MotionEvent.ACTION_UP:
                 Log.i("MyTag", "ACTION_UP");
                 if (indexOfBonus == -1) {
-                    if (!isLegs) {
-                        ifNoHeroNewHero();
-                        hero.getLast().addPointToBody(null);
-                    }
+                    ifNoHeroNewHero();
+                    hero.getLast().addPointToBody(null);
                 } else {
                     listPosOfBonus.remove(indexOfBonus);
                     indexOfBonus = -1;

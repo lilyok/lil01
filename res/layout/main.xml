@@ -4,35 +4,19 @@
               android:layout_height="wrap_content"
               android:id="@+id/gl"
               android:visibility="visible"
-              android:stretchColumns="0, 1, 2, 3, 4"
+              android:stretchColumns="0, 1, 2"
               android:background="#150dff">
 
     <TableRow
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
         android:layout_gravity="center"
         android:gravity="center|fill">
 
-        <RadioButton
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:drawableRight="@drawable/body"
-                android:id="@+id/rBody" android:layout_column="0" android:checked="true" android:background="#050447"
-                android:onClick="bodyRbtnClick"
-            android:paddingLeft="1dp"
-            android:gravity="left"/>
-        <RadioButton
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:drawableRight="@drawable/legs"
-                android:id="@+id/rLegs" android:layout_column="1" android:checked="false"
-                android:background="#050447" android:onClick="legsRbtnClick"
-            android:paddingLeft="1dp"
-            android:gravity="left"/>
         <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="fill_parent"
-                android:layout_height="fill_parent" android:layout_column="2">
+                android:layout_height="fill_parent" android:layout_column="0">
             <TextView
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
@@ -50,7 +34,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:text="Help"
-                android:id="@+id/helpBtn" android:layout_column="3"
+                android:id="@+id/helpBtn" android:layout_column="1"
             android:textSize="16dp"
                 android:onClick="helpBtnClick" android:longClickable="true"
             android:textStyle="bold" />
@@ -60,7 +44,7 @@
                 android:text="Start"
                 android:id="@+id/startBtn" android:onClick="startBtnClick"
                 android:enabled="true" android:visibility="visible" android:focusable="false"
-                android:layout_column="4" android:layout_gravity="right"
+                android:layout_column="2" android:layout_gravity="right"
             android:textSize="16dp"
             android:textStyle="bold" />
     </TableRow>
