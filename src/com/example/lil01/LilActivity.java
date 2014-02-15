@@ -2,10 +2,12 @@ package com.example.lil01;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.*;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -19,14 +21,17 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
-public class LilActivity extends Activity {
+public class LilActivity extends Activity implements View.OnClickListener {
     private MyView myview;
 
     private TextView score;
     private final String FILENAME = "score.log";
     private final List<Integer> helps = new ArrayList<Integer>();
     private final List<String> helpTexts = new ArrayList<String>();
-
+    private Dialog dialog;
+    private final AtomicInteger picNum = new AtomicInteger(0);
+    private View helpView;
+    private TextView helpText;
     /**
      * Called when the activity is first created.
      */
@@ -41,7 +46,7 @@ public class LilActivity extends Activity {
         helps.add(R.drawable.help5);
         helps.add(R.drawable.help6);
 
-        helpTexts.add("You can draw heroes on window:\n1) Select 'Body' if it was not selected.");
+        helpTexts.add("You can draw heroes on window: 1) Select 'Body' if it was not selected. проверка переноста тест тест тетс прпрар впппы ппппы рррррыры ппапап рррккр рррра рррра рррра");
         helpTexts.add("2) Draw body, head.\n");
         helpTexts.add("3) Select 'Legs' and\ndraw legs, tails, wings.");
         helpTexts.add("4) Press wizard button\nfor animate hero.");
@@ -99,97 +104,60 @@ public class LilActivity extends Activity {
 
 
     public void helpBtnClick(final View view) {
+        myview.doPause();
         Toast.makeText(this, "тут будет справка", Toast.LENGTH_SHORT).show();
-        final AlertDialog.Builder alertHelpBuilder = new AlertDialog.Builder(this);
-        // alertHelpBuilder.setTitle("Help");
+        picNum.set(0);
 
+        dialog = new Dialog(this,android.R.style.Theme_Translucent);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.dialog);
+        dialog.setCancelable(true);
+        Button btnCancel = (Button) dialog.findViewById(R.id.btncancel);
+        btnCancel.setOnClickListener(this);
 
-        final View helpView = new View(this);
-        final AtomicInteger picNum = new AtomicInteger(0);
-        final TextView helpText = new TextView(this);
+        helpText = (TextView) dialog.findViewById(R.id.tv);
         helpText.setText(helpTexts.get(0));
-        helpText.setTextSize(14);
 
-        helpView.setBackground(getResources().getDrawable(helps.get(0)));
+        helpView = dialog.findViewById(R.id.helpView);
+        helpView.setBackgroundResource(helps.get(0));
 
+        Button nextBtn = (Button) dialog.findViewById(R.id.nextBtn);
+        nextBtn.setOnClickListener(this);
+        Button backBtn = (Button) dialog.findViewById(R.id.backBtn);
+        backBtn.setOnClickListener(this);
 
-        alertHelpBuilder.setNegativeButton("Close", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
+        dialog.show();
+    }
 
-
-        final Button backBtn = new Button(this);
-        backBtn.setText("back");
-        backBtn.setEnabled(false);
-
-        backBtn.setLayoutParams(new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.MATCH_PARENT, 1.0f));
-
-        final Button nextBtn = new Button(this);
-        nextBtn.setText("next");
-        nextBtn.setLayoutParams(new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.MATCH_PARENT, 1.0f));
-
-        backBtn.setOnClickListener(new View.OnClickListener() {
-
-            public void onClick(View v) {
-                int i = picNum.get();
-                if (i > 0) {
-                    i = picNum.decrementAndGet();
-                    if (i == 4)
-                        nextBtn.setEnabled(true);
-                    else if (i == 0)
-                        v.setEnabled(false);
-                    helpView.setBackground(getResources().getDrawable(helps.get(i)));
-                    helpText.setText(helpTexts.get(i));
-                }
-            }
-
-        });
-
-
-        nextBtn.setOnClickListener(new View.OnClickListener() {
-
-            public void onClick(View v) {
-                int i = picNum.get();
+    @Override
+    public void onClick(View v) {
+        int i = 0;
+        switch (v.getId()) {
+            case R.id.btncancel:
+                myview.doContinue();
+                dialog.dismiss();
+                break;
+            case R.id.nextBtn:
+                i = picNum.get();
                 if (i < 5) {
                     i = picNum.incrementAndGet();
-                    if (i == 1)
-                        backBtn.setEnabled(true);
-                    else if (i == 5)
-                        v.setEnabled(false);
 
-                    helpView.setBackground(getResources().getDrawable(helps.get(i)));
+                    helpView.setBackgroundResource(helps.get(i));
                     helpText.setText(helpTexts.get(i));
                 }
-            }
+                break;
+            case R.id.backBtn:
+                i = picNum.get();
+                if (i > 0) {
+                    i = picNum.decrementAndGet();
+                    helpView.setBackgroundResource(helps.get(i));
+                    helpText.setText(helpTexts.get(i));
+                }
+                break;
+            default:
+                break;
+        }
 
-        });
-
-
-        LinearLayout layoutHorizontal = new LinearLayout(this);
-        layoutHorizontal.setOrientation(0);
-        layoutHorizontal.setGravity(Gravity.FILL);
-        layoutHorizontal.addView(backBtn);
-        layoutHorizontal.addView(helpText);
-        layoutHorizontal.addView(nextBtn);
-
-
-        LinearLayout layoutVertical = new LinearLayout(this);
-        layoutVertical.setOrientation(1);
-        layoutVertical.setGravity(Gravity.CENTER);
-
-        layoutVertical.addView(layoutHorizontal);
-        layoutVertical.addView(helpView);
-
-        alertHelpBuilder.setView(layoutVertical);
-
-
-        alertHelpBuilder.show();
     }
 
 

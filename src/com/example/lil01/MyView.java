@@ -25,6 +25,7 @@ class MyView extends View {
     private Deque<Enemy> enemy;
 
     private boolean isStart = false;
+    private boolean lastIsStart = false;
     private boolean isWizard = false;
 
     private boolean isInfo = false;
@@ -343,6 +344,13 @@ class MyView extends View {
         }
     }
 
+    public void doPause(){
+        lastIsStart = isStart;
+        isStart = false;
+    }
+    public void doContinue(){
+        isStart = lastIsStart;
+    }
 
     private boolean animateHero() {
         int heroSize = hero.size();

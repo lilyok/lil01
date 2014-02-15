@@ -13,40 +13,53 @@
         android:layout_gravity="center"
         android:gravity="center|fill">
 
+        <Button
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:text="Help"
+            android:id="@+id/helpBtn" android:layout_column="0"
+            android:textSize="16dp"
+            android:onClick="helpBtnClick" android:longClickable="true"
+            android:textStyle="bold"
+            android:background="@drawable/btn"
+            android:textColor="#ffffff"/>
+
         <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="fill_parent"
-                android:layout_height="fill_parent" android:layout_column="0">
+                android:layout_height="fill_parent" android:layout_column="1"
+                android:background="@drawable/board">
             <TextView
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:text="Killed enemies"
                     android:id="@+id/textView" android:gravity="center" android:textStyle="bold|normal"
-                    android:textSize="17dp"/>
+                    android:textSize="17dp"
+                    android:password="false"
+                    android:textColor="#ffffff"/>
             <TextView
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
                     android:text="0"
                     android:id="@+id/tvScore" android:gravity="center_horizontal|fill_vertical" android:focusableInTouchMode="false"
-                    android:textSize="18dp" android:textStyle="bold"/>
+                    android:textSize="18dp" android:textStyle="bold"
+                    android:textColor="#ffffff"/>
         </LinearLayout>
-        <Button
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:text="Help"
-                android:id="@+id/helpBtn" android:layout_column="1"
-            android:textSize="16dp"
-                android:onClick="helpBtnClick" android:longClickable="true"
-            android:textStyle="bold" />
+
         <Button
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:text="Start"
                 android:id="@+id/startBtn" android:onClick="startBtnClick"
                 android:enabled="true" android:visibility="visible" android:focusable="false"
-                android:layout_column="2" android:layout_gravity="right"
-            android:textSize="16dp"
-            android:textStyle="bold" />
+                android:layout_column="2"
+                android:textSize="16dp"
+            android:textStyle="bold"
+            android:background="@drawable/btn"
+            android:textColor="#ffffff"
+            />
+
+
     </TableRow>
 </TableLayout>
 

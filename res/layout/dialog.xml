@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="#170070"
+                android:orientation="vertical" >
+    <TextView
+    android:id="@+id/tv"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignParentTop="true"
+    android:text="My Custom Dialog"
+    android:textAppearance="?android:attr/textAppearanceMedium"
+    android:gravity="center"
+    android:background="@drawable/board"
+    android:layout_toRightOf="@+id/backBtn"
+    android:layout_toLeftOf="@+id/nextBtn"/>
+    <!--<EditText-->
+        <!--android:id="@+id/etsearch"-->
+        <!--android:layout_width="250dp"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_below="@+id/tv"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--android:layout_margin="10dp" >-->
+        <!--<requestFocus />-->
+    <!--</EditText>-->
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/helpView"
+        android:background="@drawable/help1"
+        android:layout_above="@+id/btncancel"
+        android:layout_below="@+id/tv"/>
+
+    <Button
+        android:id="@+id/btncancel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text=" Cancel "
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:background="@drawable/btn"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/backBtn"
+        android:layout_above="@+id/helpView"
+        android:layout_alignParentLeft="true"
+        android:background="@drawable/back"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/nextBtn"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:background="@drawable/next"/>
+
+</RelativeLayout>
