@@ -3,23 +3,18 @@ package com.example.lil01;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.*;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.*;
 import android.widget.*;
-import characters.Enemy;
-import characters.Hero;
+import static java.lang.Math.*;
 
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-
 
 public class LilActivity extends Activity implements View.OnClickListener {
     private MyView myview;
@@ -28,7 +23,10 @@ public class LilActivity extends Activity implements View.OnClickListener {
     private final String FILENAME = "score.log";
     private final List<Integer> helps = new ArrayList<Integer>();
     private final List<String> helpTexts = new ArrayList<String>();
-    private Dialog dialog;
+    private Dialog helpDialog;
+    private Dialog resultDialog;
+    private Dialog exitDialog;
+
     private final AtomicInteger picNum = new AtomicInteger(0);
     private View helpView;
     private TextView helpText;
@@ -38,7 +36,6 @@ public class LilActivity extends Activity implements View.OnClickListener {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         helps.add(R.drawable.help1);
         helps.add(R.drawable.help2);
         helps.add(R.drawable.help3);
@@ -73,60 +70,73 @@ public class LilActivity extends Activity implements View.OnClickListener {
     }
 
     public void onBackPressed() {
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
-        alertDialog.setTitle("Exit?");
-
-        alertDialog.setMessage("Do you want exit?");
-
-        alertDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                Intent intent = new Intent(Intent.ACTION_MAIN);
-                intent.addCategory(Intent.CATEGORY_HOME);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-
-                int lastScore = readScore();
-
-                recalculateScore(lastScore);
-            }
-        });
-
-        alertDialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
-
-        alertDialog.show();
-        return;
-
+        int lastScore = readScore();
+        Integer currentScore = recalculateScore(lastScore);
+        showExitDialog(currentScore, max(currentScore, lastScore));
     }
 
+    public void showExitDialog(Integer currentScore, Integer maxScore) {
+        myview.doPause();
+        exitDialog = new Dialog(this,android.R.style.Theme_Translucent);
+        exitDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        exitDialog.setContentView(R.layout.exit_dialog);
+        exitDialog.setCancelable(true);
+        Button btnReturn = (Button) exitDialog.findViewById(R.id.btncancelexit);
+        btnReturn.setOnClickListener(this);
+
+        Button btnExit = (Button) exitDialog.findViewById(R.id.btnexit);
+        btnExit.setOnClickListener(this);
+
+        EditText killedEnemy = (EditText) exitDialog.findViewById(R.id.killedEnemy);
+        killedEnemy.setText(currentScore.toString());
+
+        EditText recordKilledEnemy = (EditText) exitDialog.findViewById(R.id.recordKilledEnemy);
+        recordKilledEnemy.setText(maxScore.toString());
+
+        exitDialog.show();
+    }
+
+    public void showResultDialog(Integer currentScore, Integer maxScore) {
+        resultDialog = new Dialog(this,android.R.style.Theme_Translucent);
+        resultDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        resultDialog.setContentView(R.layout.result_dialog);
+        resultDialog.setCancelable(true);
+        Button btnReturn = (Button) resultDialog.findViewById(R.id.btnreturn);
+        btnReturn.setOnClickListener(this);
+
+        EditText killedEnemy = (EditText) resultDialog.findViewById(R.id.killedEnemy);
+        killedEnemy.setText(currentScore.toString());
+
+        EditText recordKilledEnemy = (EditText) resultDialog.findViewById(R.id.recordKilledEnemy);
+        recordKilledEnemy.setText(maxScore.toString());
+
+        resultDialog.show();
+    }
 
     public void helpBtnClick(final View view) {
         myview.doPause();
         Toast.makeText(this, "тут будет справка", Toast.LENGTH_SHORT).show();
         picNum.set(0);
 
-        dialog = new Dialog(this,android.R.style.Theme_Translucent);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.dialog);
-        dialog.setCancelable(true);
-        Button btnCancel = (Button) dialog.findViewById(R.id.btncancel);
+        helpDialog = new Dialog(this,android.R.style.Theme_Translucent);
+        helpDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        helpDialog.setContentView(R.layout.help_dialog);
+        helpDialog.setCancelable(true);
+        Button btnCancel = (Button) helpDialog.findViewById(R.id.btncancel);
         btnCancel.setOnClickListener(this);
 
-        helpText = (TextView) dialog.findViewById(R.id.tv);
+        helpText = (TextView) helpDialog.findViewById(R.id.tv);
         helpText.setText(helpTexts.get(0));
 
-        helpView = dialog.findViewById(R.id.helpView);
+        helpView = helpDialog.findViewById(R.id.helpView);
         helpView.setBackgroundResource(helps.get(0));
 
-        Button nextBtn = (Button) dialog.findViewById(R.id.nextBtn);
+        Button nextBtn = (Button) helpDialog.findViewById(R.id.nextBtn);
         nextBtn.setOnClickListener(this);
-        Button backBtn = (Button) dialog.findViewById(R.id.backBtn);
+        Button backBtn = (Button) helpDialog.findViewById(R.id.backBtn);
         backBtn.setOnClickListener(this);
 
-        dialog.show();
+        helpDialog.show();
     }
 
     @Override
@@ -135,7 +145,17 @@ public class LilActivity extends Activity implements View.OnClickListener {
         switch (v.getId()) {
             case R.id.btncancel:
                 myview.doContinue();
-                dialog.dismiss();
+                helpDialog.dismiss();
+                break;
+            case R.id.btnreturn:
+                resultDialog.dismiss();
+                break;
+            case R.id.btncancelexit:
+                myview.doContinue();
+                exitDialog.dismiss();
+                break;
+            case R.id.btnexit:
+                finish();
                 break;
             case R.id.nextBtn:
                 i = picNum.get();
@@ -163,7 +183,6 @@ public class LilActivity extends Activity implements View.OnClickListener {
 
     public void startBtnClick(View view) {
         // выводим сообщение
-//        Toast.makeText(this, "Зачем вы нажали?", Toast.LENGTH_SHORT).show();
 
         Button button = (Button) view;
         CharSequence text = button.getText();
@@ -172,17 +191,19 @@ public class LilActivity extends Activity implements View.OnClickListener {
             button.setText("Pause");
         } else {
             button.setText("Start");
-            recalculateScore(lastScore);
+            Integer currentScore = recalculateScore(lastScore);
+            showResultDialog(currentScore, max(currentScore, lastScore));
         }
-        myview.start(lastScore);
+        myview.start();
     }
 
-    private void recalculateScore(int lastScore) {
+    private Integer recalculateScore(int lastScore) {
         Integer currentScore = Integer.valueOf(score.getText().toString());
         if (currentScore > lastScore) {
             writeScore(currentScore.toString());
             Toast.makeText(this, "Новый рекорд " + currentScore.toString(), Toast.LENGTH_SHORT).show();
         }
+        return currentScore;
     }
 
     void writeScore(String currentScore) {

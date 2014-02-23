@@ -16,15 +16,6 @@
     android:background="@drawable/board"
     android:layout_toRightOf="@+id/backBtn"
     android:layout_toLeftOf="@+id/nextBtn"/>
-    <!--<EditText-->
-        <!--android:id="@+id/etsearch"-->
-        <!--android:layout_width="250dp"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_below="@+id/tv"-->
-        <!--android:layout_centerHorizontal="true"-->
-        <!--android:layout_margin="10dp" >-->
-        <!--<requestFocus />-->
-    <!--</EditText>-->
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"

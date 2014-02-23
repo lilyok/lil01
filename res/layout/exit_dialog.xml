@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:background="@drawable/board"
+                android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentStart="false"
+        android:orientation="vertical"
+        android:id="@+id/linearLayout2"
+        android:background="#0d116c"
+        android:gravity="center">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentStart="false"
+            android:gravity="center"
+            android:id="@+id/linearLayout">
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/editText"
+                android:text=" enemies"
+                android:textSize="24dp"
+                android:layout_alignParentTop="true"
+                android:layout_toLeftOf="@+id/killedEnemy"
+                android:editable="false"
+                android:clickable="false"
+                android:background="#0d116c"
+                android:textColor="#ffffff"/>
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/killedEnemy"
+                android:layout_alignParentTop="true"
+                android:layout_toLeftOf="@+id/editText3"
+                android:text=" 0 "
+                android:textColor="#ffa528"
+                android:editable="false"
+                android:textSize="24dp"
+                android:background="#0d116c"/>
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/editText3"
+                android:text=" enemies"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentRight="true"
+                android:editable="false"
+                android:textSize="24dp"
+                android:background="#0d116c"
+                android:textColor="#ffffff"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentStart="false"
+            android:layout_toLeftOf="@+id/editText3"
+            android:gravity="center"
+            android:id="@+id/linearLayout">
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/editText6"
+                android:text="Current record "
+                android:editable="false"
+                android:textSize="24dp"
+                android:background="#0d116c"
+                android:textColor="#ffffff"/>
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/recordKilledEnemy"
+                android:textSize="24dp"
+                android:text=" 0 "
+                android:editable="false"
+                android:textColor="#ffa528"
+                android:background="#0d116c"/>
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/editText4"
+                android:text=" enemies"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentRight="true"
+                android:editable="false"
+                android:textSize="24dp"
+                android:background="#0d116c"
+                android:textColor="#ffffff"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@+id/linearLayout2"
+        android:layout_alignRight="@+id/linearLayout2"
+        android:layout_alignLeft="@+id/linearLayout2">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cancel"
+            android:id="@+id/btncancelexit"
+            android:layout_weight="0.5"
+            android:layout_marginLeft="-1dp"
+            android:background="@drawable/btn"
+            android:textColor="#ffffff"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Exit"
+            android:id="@+id/btnexit"
+            android:layout_weight="0.5"
+            android:background="@drawable/btn"
+            android:textColor="#ffffff"/>
+    </LinearLayout>
+
+</RelativeLayout>
