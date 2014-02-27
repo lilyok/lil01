@@ -61,7 +61,8 @@ class MyView extends View {
     private int sBoxOpened;
     private int sSwing;
     private int sStep;
-
+    private int sClap;
+    private int sApplause;
 
     public MyView(Context context, int height, TextView scoreTextView, Button startBtn) {
         super(context);
@@ -73,8 +74,10 @@ class MyView extends View {
         sBreath = sounds.load(context, R.raw.breath, 1);
         sSnarl = sounds.load(context, R.raw.snarl, 1);
         sBoxOpened = sounds.load(context, R.raw.box, 1);
-        sSwing = sounds.load(context, R.raw.swing, 1);
-        sStep = sounds.load(context, R.raw.step, 1);
+        sSwing = sounds.load(context, R.raw.bats, 1);
+        sStep = sounds.load(context, R.raw.martian, 1);
+        sClap = sounds.load(context,R.raw.clap,1);
+        sApplause = sounds.load(context,R.raw.applause,1);
 
         bonusPic = BitmapFactory.decodeResource(getResources(), R.drawable.bonus);
         bombPic = BitmapFactory.decodeResource(getResources(), R.drawable.bomb);
@@ -281,7 +284,8 @@ class MyView extends View {
                     frameNum = 0;
                     hasBomb = false;
 
-                    scoreTextView.setText(String.valueOf(score+enemy.size()));
+                    score += enemy.size();
+                    scoreTextView.setText(String.valueOf(score));
                     clearActors();
                 }
             }
@@ -289,7 +293,8 @@ class MyView extends View {
             double dx;
             collisionHero.clear();
             //check collision
-            //sounds.play(sSwing, 0.1f, 0.1f, 0, 0, 0.5f);
+            if (isStart)
+                sounds.play(sSwing, 0.1f, 0.1f, 0, 0, 0.5f);
 
             for (Enemy e : enemy) {
                 boolean isCollision = false;
@@ -312,7 +317,7 @@ class MyView extends View {
                             collisionHero.add(h);
                         }
                         if (e.isDied()) {
-                            sounds.play(sBreath, 1.0f, 1.0f, 0, 0, 0.5f);
+                            sounds.play(sSnarl, 1.0f, 1.0f, 0, 0, 2.0f);
                             h.countDeadEnemies++;
                             score++;
                             int typeOfDragon = rnd.nextInt(100) % 3;
@@ -328,20 +333,13 @@ class MyView extends View {
                 //if hero dead, enemy continue gone
                 if (!isCollision && e.getStep() == 0)
                     e.randomizeStep();
-                //if enemy dead
-//                if (e.isDied()) {
-//                    score++;
-//                    int typeOfDragon = rnd.nextInt(100) % 3;
-//                    e.setBitmaps(enemyPics.subList(typeOfDragon * 5, typeOfDragon * 5 + 5));
-//                    scoreTextView.setText(score.toString());
-//
-//                }
             }
 
             //draw enemies
             for (Enemy e : enemy) {
                 e.move(true, canvas);
                 if (e.getShift() >= canvasWidth) {
+
                     isInfo = true;
                     startBtn.callOnClick();
                     break;
@@ -349,8 +347,8 @@ class MyView extends View {
             }
 
             //draw heroes
-//            if (hero.size()>0)
-//                sounds.play(sStep, 1.0f, 1.0f, 0, 0, 1.5f);
+            if (isStart&&hero.size()>0 && hero.getFirst().isAnimated())
+                sounds.play(sStep, 1.0f, 1.0f, 0, 0, 1.5f);
 
             for (Iterator<Hero> iterator = hero.iterator(); iterator.hasNext(); ) {
                 Hero h = iterator.next();
@@ -365,7 +363,7 @@ class MyView extends View {
                     h.setStep(5);
                 h.move(true, canvas);
                 if (h.isDied()){
-                    sounds.play(sSnarl, 1.0f, 1.0f, 0, 0, 0.5f);
+                    sounds.play(sBreath, 1.0f, 1.0f, 0, 0, 1.5f);
                     iterator.remove();
                 }
             }
@@ -381,8 +379,15 @@ class MyView extends View {
         }
     }
 
-    public void start() {
+    public void start(int lastScore) {
         isStart = !isStart;
+        if (!isStart){
+            if (lastScore >= score)
+                sounds.play(sClap,1.0f,1.0f,0,0,1.0f);
+            else
+                sounds.play(sApplause,1.0f,1.0f,0,0,1.0f);
+
+        }
     }
 
     private void clearAll() {

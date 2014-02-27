@@ -194,7 +194,7 @@ public class LilActivity extends Activity implements View.OnClickListener {
             Integer currentScore = recalculateScore(lastScore);
             showResultDialog(currentScore, max(currentScore, lastScore));
         }
-        myview.start();
+        myview.start(lastScore);
     }
 
     private Integer recalculateScore(int lastScore) {
