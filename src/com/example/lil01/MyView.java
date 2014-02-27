@@ -2,6 +2,8 @@ package com.example.lil01;
 
 import android.content.Context;
 import android.graphics.*;
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -51,9 +53,28 @@ class MyView extends View {
 
     private Set<Hero> collisionHero = new HashSet<Hero>();
 
+    private SoundPool sounds;
+    private int sHit;
+    private int sExplosion;
+    private int sBreath;
+    private int sSnarl;
+    private int sBoxOpened;
+    private int sSwing;
+    private int sStep;
+
+
     public MyView(Context context, int height, TextView scoreTextView, Button startBtn) {
         super(context);
         rnd = new Random();
+
+        sounds = new SoundPool(10, AudioManager.STREAM_MUSIC,0);
+        sHit = sounds.load(context, R.raw.action, 1);
+        sExplosion = sounds.load(context, R.raw.explosion, 1);
+        sBreath = sounds.load(context, R.raw.breath, 1);
+        sSnarl = sounds.load(context, R.raw.snarl, 1);
+        sBoxOpened = sounds.load(context, R.raw.box, 1);
+        sSwing = sounds.load(context, R.raw.swing, 1);
+        sStep = sounds.load(context, R.raw.step, 1);
 
         bonusPic = BitmapFactory.decodeResource(getResources(), R.drawable.bonus);
         bombPic = BitmapFactory.decodeResource(getResources(), R.drawable.bomb);
@@ -172,6 +193,8 @@ class MyView extends View {
             case MotionEvent.ACTION_UP:
                 Log.i("MyTag", "ACTION_UP");
                 if (indexOfBonus >= 0) {
+                    sounds.play(sBoxOpened, 1.0f, 1.0f, 0, 0, 1.5f);
+
                     listPosOfBonus.remove(indexOfBonus);
                     indexOfBonus = -1;
 
@@ -188,6 +211,7 @@ class MyView extends View {
                         hero.add(lastNotAnimate);
                 } else if ((indexOfBonus == -2) &&(frameNum == 0)){
                   frameNum = 1;
+                  sounds.play(sExplosion, 1.0f, 1.0f, 0, 0, 1.5f);
                 }
 
                 break;
@@ -265,6 +289,8 @@ class MyView extends View {
             double dx;
             collisionHero.clear();
             //check collision
+            //sounds.play(sSwing, 0.1f, 0.1f, 0, 0, 0.5f);
+
             for (Enemy e : enemy) {
                 boolean isCollision = false;
 
@@ -274,6 +300,8 @@ class MyView extends View {
                         dx = isCollision(canvasWidth, h, e);
 
                         if (dx >= -1) { //fight
+                            sounds.play(sHit, 1.0f, 1.0f, 0, 0, 1.5f);
+
                             e.setShift((int) (e.getShift() + e.getStep() - dx / 2 + 1));
                             e.setStep(0);
                             h.setShift((int) (h.getShift() + h.getStep() - dx / 2 + 1));
@@ -284,7 +312,12 @@ class MyView extends View {
                             collisionHero.add(h);
                         }
                         if (e.isDied()) {
+                            sounds.play(sBreath, 1.0f, 1.0f, 0, 0, 0.5f);
                             h.countDeadEnemies++;
+                            score++;
+                            int typeOfDragon = rnd.nextInt(100) % 3;
+                            e.setBitmaps(enemyPics.subList(typeOfDragon * 5, typeOfDragon * 5 + 5));
+                            scoreTextView.setText(score.toString());
                             break;
                         }
 
@@ -296,13 +329,13 @@ class MyView extends View {
                 if (!isCollision && e.getStep() == 0)
                     e.randomizeStep();
                 //if enemy dead
-                if (e.isDied()) {
-                    score++;
-                    int typeOfDragon = rnd.nextInt(100) % 3;
-                    e.setBitmaps(enemyPics.subList(typeOfDragon * 5, typeOfDragon * 5 + 5));
-                    scoreTextView.setText(score.toString());
-
-                }
+//                if (e.isDied()) {
+//                    score++;
+//                    int typeOfDragon = rnd.nextInt(100) % 3;
+//                    e.setBitmaps(enemyPics.subList(typeOfDragon * 5, typeOfDragon * 5 + 5));
+//                    scoreTextView.setText(score.toString());
+//
+//                }
             }
 
             //draw enemies
@@ -316,6 +349,9 @@ class MyView extends View {
             }
 
             //draw heroes
+//            if (hero.size()>0)
+//                sounds.play(sStep, 1.0f, 1.0f, 0, 0, 1.5f);
+
             for (Iterator<Hero> iterator = hero.iterator(); iterator.hasNext(); ) {
                 Hero h = iterator.next();
                 if ((h.countDeadEnemies >= 2) && (rnd.nextInt(100) == 0) && (listPosOfBonus.size() < 3)) {
@@ -328,8 +364,10 @@ class MyView extends View {
                 if (!collisionHero.contains(h) && h.getStep() == 0 && h.isAnimated())
                     h.setStep(5);
                 h.move(true, canvas);
-                if (h.isDied())
+                if (h.isDied()){
+                    sounds.play(sSnarl, 1.0f, 1.0f, 0, 0, 0.5f);
                     iterator.remove();
+                }
             }
 
 
@@ -375,7 +413,7 @@ class MyView extends View {
         int heroSize = hero.size();
         int numOfHero = rnd.nextInt(255 - heroSize) + heroSize + 1;
         Hero h = hero.getLast();
-        isWizard = false;
+
         if (!h.isAnimated()) {
             lastHero = hero.getLast().copy();
 
@@ -404,10 +442,14 @@ class MyView extends View {
 
             if (hero.size()>0 && !hasBomb) {
                 hero.getLast().deletePoint(x, y);
-                if (hero.getLast().getPoints().size() == 0) hero.removeLast();
+                if (hero.getLast().getPoints().size() == 0){
+                    hero.removeLast();
+                    isWizard = false;
+                }
 
                 Hero h = hero.getLast();
                 if (h.getBackend() < x && h.getFront() > x && h.getTop() < y && h.getBottom() > y) {
+                    isWizard = false;
                     animateHero();
                     Log.e("Vas", "on double tap: " + Thread.currentThread().toString());
                 }
