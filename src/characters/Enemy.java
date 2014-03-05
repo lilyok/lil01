@@ -119,4 +119,16 @@ public class Enemy extends Paint {
     public void setBitmaps(List<Bitmap> bitmaps) {
         this.bitmaps = bitmaps;
     }
+
+    public int getNumFrame() {
+        return numFrame;
+    }
+
+    public Bitmap getFirstBitmap() {
+        return bitmaps.get(0);
+    }
+
+    public void setNumFrame(Integer numFrame) {
+        this.numFrame = numFrame;
+    }
 }

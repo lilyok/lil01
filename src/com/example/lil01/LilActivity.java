@@ -10,6 +10,8 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.*;
 import android.widget.*;
+import characters.Enemy;
+
 import static java.lang.Math.*;
 
 import java.io.*;
@@ -54,13 +56,13 @@ public class LilActivity extends Activity implements View.OnClickListener {
         DisplayMetrics displaymetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
         int height = displaymetrics.heightPixels;
-
+        int width = displaymetrics.widthPixels;
         setContentView(R.layout.main);
 
         score = (TextView) findViewById(R.id.tvScore);
         Button start = (Button) findViewById(R.id.startBtn);
 
-        myview = new MyView(this, height, score, start);
+        myview = new MyView(this, min(height,width), score, start);
 
         TableLayout gl = (TableLayout) findViewById(R.id.gl);
         myview.setBackground(getResources().getDrawable(R.drawable.background));
@@ -71,6 +73,7 @@ public class LilActivity extends Activity implements View.OnClickListener {
 
     public void onBackPressed() {
         int lastScore = readScore();
+        myview.soundScore(lastScore);
         Integer currentScore = recalculateScore(lastScore);
         showExitDialog(currentScore, max(currentScore, lastScore));
     }
@@ -246,4 +249,58 @@ public class LilActivity extends Activity implements View.OnClickListener {
         }
         return -1;
     }
+
+
+//    @Override
+//    protected void onPause() {
+//        Log.d("cmd", "onPause");
+//
+//        super.onPause();
+//    }
+//
+//    @Override
+//    protected void onStop() {
+//        Log.d("cmd", "onStop");
+//
+//        super.onStop();
+//    }
+//
+//    @Override
+//    protected void onDestroy() {
+//
+//        Log.d("cmd", "onDestroy");
+//
+//        super.onDestroy();
+//    }
+//
+//    @Override
+//    protected void onStart() {
+//        Log.d("cmd", "onStart");
+//
+//        super.onStart();
+//    }
+
+//    @Override
+//    protected void onPostCreate(Bundle savedInstanceState) {
+//        Log.d("cmd", "onPostCreate");
+//
+//        super.onPostCreate(savedInstanceState);
+//    }
+
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putSerializable("enemy", myview.getState());
+        outState.putString("scoreString",score.getText().toString());
+        Log.d("cmd", "onSaveInstanceState");
+        super.onSaveInstanceState(outState);
+
+    }
+
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        myview.setState((State) savedInstanceState.getSerializable("enemy"));
+        score.setText(savedInstanceState.getString("scoreString"));
+        Log.d("cmd", "onRestoreInstanceState");
+    }
+
+
 }

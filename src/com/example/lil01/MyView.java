@@ -2,6 +2,7 @@ package com.example.lil01;
 
 import android.content.Context;
 import android.graphics.*;
+import android.graphics.Point;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.util.Log;
@@ -12,7 +13,9 @@ import android.widget.Button;
 import android.widget.TextView;
 import characters.Enemy;
 import characters.Hero;
+import geometry.*;
 
+import java.io.Serializable;
 import java.util.*;
 
 class MyView extends View {
@@ -64,11 +67,13 @@ class MyView extends View {
     private int sClap;
     private int sApplause;
 
+    private final int countOfBitmaps = 5;
+
     public MyView(Context context, int height, TextView scoreTextView, Button startBtn) {
         super(context);
         rnd = new Random();
 
-        sounds = new SoundPool(10, AudioManager.STREAM_MUSIC,0);
+        sounds = new SoundPool(10, AudioManager.STREAM_MUSIC, 0);
         sHit = sounds.load(context, R.raw.action, 1);
         sExplosion = sounds.load(context, R.raw.explosion, 1);
         sBreath = sounds.load(context, R.raw.breath, 1);
@@ -76,8 +81,8 @@ class MyView extends View {
         sBoxOpened = sounds.load(context, R.raw.box, 1);
         sSwing = sounds.load(context, R.raw.bats, 1);
         sStep = sounds.load(context, R.raw.martian, 1);
-        sClap = sounds.load(context,R.raw.clap,1);
-        sApplause = sounds.load(context,R.raw.applause,1);
+        sClap = sounds.load(context, R.raw.clap, 1);
+        sApplause = sounds.load(context, R.raw.applause, 1);
 
         bonusPic = BitmapFactory.decodeResource(getResources(), R.drawable.bonus);
         bombPic = BitmapFactory.decodeResource(getResources(), R.drawable.bomb);
@@ -85,7 +90,7 @@ class MyView extends View {
         enemySideLength = BitmapFactory.decodeResource(getResources(), R.drawable.enemy1).getHeight();
         bonusSideLength = bonusPic.getWidth();
         bombHeight = bombPic.getHeight();
-        bombWidth = bombPic.getWidth()/frameCount;
+        bombWidth = bombPic.getWidth() / frameCount;
 
 
         gestureDetector = new GestureDetector(context, new GestureListener());
@@ -135,7 +140,7 @@ class MyView extends View {
         int count = (int) Math.round(height / (double) enemySideLength);//bmp.getHeight());//3;//rnd.nextInt(height/(3*bmp.getHeight())-1)+1;
         for (int i = 0; i < count - 1; i++) {
             int typeOfDragon = rnd.nextInt(100) % 3;
-            enemy.add(new Enemy(enemyPics.subList(typeOfDragon * 5, typeOfDragon * 5 + 5)));
+            enemy.add(new Enemy(enemyPics.subList(typeOfDragon * countOfBitmaps, typeOfDragon * countOfBitmaps + countOfBitmaps)));
             enemy.getLast().setTop(i);
             enemy.getLast().setStep(i + 5);
         }
@@ -212,9 +217,9 @@ class MyView extends View {
 
                     if (lastNotAnimate != null)
                         hero.add(lastNotAnimate);
-                } else if ((indexOfBonus == -2) &&(frameNum == 0)){
-                  frameNum = 1;
-                  sounds.play(sExplosion, 1.0f, 1.0f, 0, 0, 1.5f);
+                } else if ((indexOfBonus == -2) && (frameNum == 0)) {
+                    frameNum = 1;
+                    sounds.play(sExplosion, 1.0f, 1.0f, 0, 0, 1.5f);
                 }
 
                 break;
@@ -272,15 +277,15 @@ class MyView extends View {
         for (Point p : listPosOfBonus) {
             canvas.drawBitmap(bonusPic, p.x, p.y, paint);
         }
-        if (hasBomb){
-            canvas.drawBitmap(bombPic, new Rect(bombWidth*frameNum, 0, (frameNum+1)*bombWidth, bombHeight),
+        if (hasBomb) {
+            canvas.drawBitmap(bombPic, new Rect(bombWidth * frameNum, 0, (frameNum + 1) * bombWidth, bombHeight),
                     new Rect(0, 0, canvasWidth, canvas.getHeight()), paint);
         }
 
         if (isStart && elapsedTime > pauseTime) {
-            if (frameNum > 0){
+            if (frameNum > 0) {
                 frameNum++;
-                if (frameNum == frameCount){
+                if (frameNum == frameCount) {
                     frameNum = 0;
                     hasBomb = false;
 
@@ -347,14 +352,14 @@ class MyView extends View {
             }
 
             //draw heroes
-            if (isStart&&hero.size()>0 && hero.getFirst().isAnimated())
+            if (isStart && hero.size() > 0 && hero.getFirst().isAnimated())
                 sounds.play(sStep, 1.0f, 1.0f, 0, 0, 1.5f);
 
             for (Iterator<Hero> iterator = hero.iterator(); iterator.hasNext(); ) {
                 Hero h = iterator.next();
                 if ((h.countDeadEnemies >= 2) && (rnd.nextInt(100) == 0) && (listPosOfBonus.size() < 3)) {
                     if (rnd.nextInt(10) < 5 || hasBomb)
-                        listPosOfBonus.add(new Point((int) (h.getShift() + h.getBackend()), rnd.nextInt(canvas.getHeight()-bonusSideLength)/*(int) h.getTop()*/));
+                        listPosOfBonus.add(new Point((int) (h.getShift() + h.getBackend()), rnd.nextInt(canvas.getHeight() - bonusSideLength)/*(int) h.getTop()*/));
                     else
                         hasBomb = true;
                     h.countDeadEnemies = 0;
@@ -362,7 +367,7 @@ class MyView extends View {
                 if (!collisionHero.contains(h) && h.getStep() == 0 && h.isAnimated())
                     h.setStep(5);
                 h.move(true, canvas);
-                if (h.isDied()){
+                if (h.isDied()) {
                     sounds.play(sBreath, 1.0f, 1.0f, 0, 0, 1.5f);
                     iterator.remove();
                 }
@@ -381,13 +386,15 @@ class MyView extends View {
 
     public void start(int lastScore) {
         isStart = !isStart;
-        if (!isStart){
-            if (lastScore >= score)
-                sounds.play(sClap,1.0f,1.0f,0,0,1.0f);
-            else
-                sounds.play(sApplause,1.0f,1.0f,0,0,1.0f);
+        if (!isStart)
+            soundScore(lastScore);
+    }
 
-        }
+    public void soundScore(int lastScore) {
+        if (lastScore >= score)
+            sounds.play(sClap, 1.0f, 1.0f, 0, 0, 1.0f);
+        else
+            sounds.play(sApplause, 1.0f, 1.0f, 0, 0, 1.0f);
     }
 
     private void clearAll() {
@@ -406,11 +413,12 @@ class MyView extends View {
         }
     }
 
-    public void doPause(){
+    public void doPause() {
         lastIsStart = isStart;
         isStart = false;
     }
-    public void doContinue(){
+
+    public void doContinue() {
         isStart = lastIsStart;
     }
 
@@ -445,9 +453,9 @@ class MyView extends View {
             float x = e.getX();
             float y = e.getY();
 
-            if (hero.size()>0 && !hasBomb) {
+            if (hero.size() > 0 && !hasBomb) {
                 hero.getLast().deletePoint(x, y);
-                if (hero.getLast().getPoints().size() == 0){
+                if (hero.getLast().getPoints().size() == 0) {
                     hero.removeLast();
                     isWizard = false;
                 }
@@ -462,6 +470,60 @@ class MyView extends View {
                 Log.d("MyTag", "Double tapped at: (" + x + "," + y + ")");
             }
             return true;
+        }
+    }
+
+
+    public void setState(State st) {
+        int ind = 0;
+        for (Enemy e : enemy) {
+            e.setShift(st.shift.get(ind));
+            e.setNumFrame(st.numFrame.get(ind));
+
+            int i = st.bmpHash.get(ind);
+            e.setBitmaps(enemyPics.subList(i, i + countOfBitmaps));
+            ind++;
+        }
+    }
+
+    public State getState() {
+        return new State(enemy, enemyPics, countOfBitmaps);
+    }
+
+
+}
+
+class State implements Serializable {
+    List<Integer> shift = new ArrayList<Integer>();
+    List<Integer> numFrame = new ArrayList<Integer>();
+    List<Integer> bmpHash = new ArrayList<Integer>();
+
+    private int calculateBitmap(Bitmap bmp) {
+        int width = bmp.getWidth();
+        int height = bmp.getHeight();
+        int hash = 0;
+        for (int x = width/9; x < width*2/9; x++) {
+            for (int y = height/9; y < height*2/9; y++) {
+                hash += bmp.getPixel(x,y);
+            }
+        }
+        return hash;
+    }
+
+    private int indexOfBitmap(int countOfBitmaps, List<Bitmap> enemyPics, int hashBmp) {
+        for (int i = 0; i < enemyPics.size(); i += countOfBitmaps) {
+            if (calculateBitmap(enemyPics.get(i)) == hashBmp)
+                return i;
+        }
+        return -1;
+    }
+
+    public State(Deque<Enemy> enemy, List<Bitmap> enemyPics, int countOfBitmaps) {
+        for (Enemy e : enemy) {
+            shift.add(e.getShift());
+            numFrame.add(e.getNumFrame());
+
+            bmpHash.add(indexOfBitmap(countOfBitmaps, enemyPics, calculateBitmap(e.getFirstBitmap())));
         }
     }
 }
