@@ -1,9 +1,10 @@
 package geometry;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Figure {
+public class Figure implements Serializable {
     private List<Point> fig;
 
     public Figure() {

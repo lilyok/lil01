@@ -2,7 +2,9 @@ package geometry;
 
 import android.graphics.Color;
 
-public class Point {
+import java.io.Serializable;
+
+public class Point implements Serializable {
     public int c;
     public int alpha = 255;
     public double x;

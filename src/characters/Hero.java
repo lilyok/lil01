@@ -6,17 +6,17 @@ import android.graphics.Paint;
 import geometry.Figure;
 import geometry.Point;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Hero {
-    private Figure body;
+public class Hero implements Serializable{
     private List<Figure> legs;
     private int shift = 0;
     private int step = 0;
     private double phi = 0;
     private double dphi = 0.1;
-    private Paint paint;
+//    private Paint paint;
     private boolean isRight = true;
 
 
@@ -32,14 +32,13 @@ public class Hero {
     public int countDeadEnemies = 0;
 
     public Hero() {
-        body = new Figure();
         legs = new ArrayList<Figure>();
-
-        paint = new Paint();
-        paint.setColor(Color.WHITE);
-        paint.setAntiAlias(true);
-        paint.setStyle(Paint.Style.FILL);
-        paint.setStrokeWidth(5);
+//
+//        paint = new Paint();
+//        paint.setColor(Color.WHITE);
+//        paint.setAntiAlias(true);
+//        paint.setStyle(Paint.Style.FILL);
+//        paint.setStrokeWidth(5);
     }
 
     public Hero copy(){
@@ -52,17 +51,6 @@ public class Hero {
         h.front = this.front;
         h.backend = this.backend;
         return h;
-    }
-
-    public void addPointToBody(Point p) {
-        body.add(p);
-        if (p != null)
-            setBounds(p.x, p.y);
-    }
-
-    public void addPointToBody(double x, double y) {
-        body.add(new Point(x, y, Color.rgb(0, 250, 250), 255));
-        setBounds(x, y);
     }
 
     public void addPointToNewLeg(double x, double y) {
@@ -119,6 +107,10 @@ public class Hero {
     }
 
     public void onDraw(Canvas canvas) {
+        Paint paint = new Paint();
+        paint.setStyle(Paint.Style.FILL);
+        paint.setStrokeWidth(5);
+
         geometry.Point currPoint = null;
         for (Point p : getPoints()) {
             if (p != null) {
@@ -155,8 +147,6 @@ public class Hero {
         else
             isRight = !isLeft;
 
-        res.addAll(body.clonePoints());
-
 
         for (Point r : res) {
             if (r != null){
@@ -187,11 +177,6 @@ public class Hero {
 //    }
 
     public void fill(int color){
-        for (Point p : body.getPoints()) {
-            if (p != null) {
-                p.c = color;
-            }
-        }
 
         for (Figure leg : legs){
             for (Point p : leg.getPoints()){
@@ -202,21 +187,6 @@ public class Hero {
     }
 
     public void deletePoint(double x, double y) {
-        int bodySize = body.getPoints().size();
-
-        if (bodySize > 0){
-            int i = 1;
-            Point lastBodyPoint = body.get(bodySize-i);
-            while (i < bodySize && lastBodyPoint == null){
-                i++;
-                lastBodyPoint = body.get(bodySize-i);
-            }
-
-            if (lastBodyPoint != null&&lastBodyPoint.x == x && lastBodyPoint.y == y){
-                body.getPoints().remove(bodySize-i);
-                checkBounds(x, y);
-            }
-        }
 
         if (legs.size() > 0){
             int legsSize = legs.size();
@@ -236,8 +206,6 @@ public class Hero {
     private void checkBounds(double x, double y) {
         if (front == x){
             front = 0;
-            for (Point point:body.getPoints())
-                if (point != null && point.x > front) front = point.x;
 
             for (Figure leg : legs)
                 for (Point point: leg.getPoints()){
@@ -246,8 +214,6 @@ public class Hero {
         }
         if (backend == x){
             backend  = 10000;
-            for (Point point:body.getPoints())
-                if (point != null && point.x < backend) backend = point.x;
 
             for (Figure leg : legs)
                 for (Point point: leg.getPoints()){
@@ -256,8 +222,6 @@ public class Hero {
         }
         if (top == y){
             top  = 10000;
-            for (Point point:body.getPoints())
-                if (point != null && point.y < top) top = point.y;
 
             for (Figure leg : legs)
                 for (Point point: leg.getPoints()){
@@ -266,8 +230,6 @@ public class Hero {
         }
         if (bottom == y){
             bottom = 0;
-            for (Point point:body.getPoints())
-                if (point != null && point.y > bottom) bottom = point.y;
 
             for (Figure leg : legs)
                 for (Point point: leg.getPoints()){

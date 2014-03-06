@@ -131,4 +131,12 @@ public class Enemy extends Paint {
     public void setNumFrame(Integer numFrame) {
         this.numFrame = numFrame;
     }
+
+    public int getBmpIndex() {
+        return bmpIndex;
+    }
+
+    public void setBmpIndex(Integer bmpIndex) {
+        this.bmpIndex = bmpIndex;
+    }
 }

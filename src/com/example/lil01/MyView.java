@@ -475,10 +475,20 @@ class MyView extends View {
 
 
     public void setState(State st) {
+        this.score = st.score;
+        this.hasBomb = st.hasBomb;
+        this.lastHero = st.lastHero.copy();
+        for (int i = 0; i < st.listXofBonus.size(); i++){
+            listPosOfBonus.add(new Point(st.listXofBonus.get(i), st.listYofBonus.get(i)));
+        }
+        hero.addAll(st.hero);
         int ind = 0;
         for (Enemy e : enemy) {
             e.setShift(st.shift.get(ind));
             e.setNumFrame(st.numFrame.get(ind));
+            e.setAlpha(st.alpha.get(ind));
+            e.setBmpIndex(st.bmpIndex.get(ind));
+            e.setStep(st.step.get(ind));
 
             int i = st.bmpHash.get(ind);
             e.setBitmaps(enemyPics.subList(i, i + countOfBitmaps));
@@ -487,23 +497,35 @@ class MyView extends View {
     }
 
     public State getState() {
-        return new State(enemy, enemyPics, countOfBitmaps);
+        return new State(score, enemy, hero, lastHero, listPosOfBonus, hasBomb, enemyPics, countOfBitmaps);
     }
 
 
 }
 
 class State implements Serializable {
-    List<Integer> shift = new ArrayList<Integer>();
-    List<Integer> numFrame = new ArrayList<Integer>();
-    List<Integer> bmpHash = new ArrayList<Integer>();
+    public List<Integer> shift = new ArrayList<Integer>();
+    public List<Integer> numFrame = new ArrayList<Integer>();
+    public List<Integer> bmpHash = new ArrayList<Integer>();
+    public List<Integer> alpha = new ArrayList<Integer>();
+    public List<Integer> bmpIndex = new ArrayList<Integer>();
+    public List<Integer> step = new ArrayList<Integer>();
+
+    public LinkedList<Hero> hero = new LinkedList<Hero>();
+    public Hero lastHero = null;
+
+    public List<Integer> listXofBonus = new ArrayList<Integer>();
+    public List<Integer> listYofBonus = new ArrayList<Integer>();
+
+    public boolean hasBomb = false;
+    public int score = 0;
 
     private int calculateBitmap(Bitmap bmp) {
         int width = bmp.getWidth();
         int height = bmp.getHeight();
         int hash = 0;
-        for (int x = width/9; x < width*2/9; x++) {
-            for (int y = height/9; y < height*2/9; y++) {
+        for (int x = width/2-3; x < width/2+3; x++) {
+            for (int y = height/2-3; y < height/2+3; y++) {
                 hash += bmp.getPixel(x,y);
             }
         }
@@ -518,10 +540,22 @@ class State implements Serializable {
         return -1;
     }
 
-    public State(Deque<Enemy> enemy, List<Bitmap> enemyPics, int countOfBitmaps) {
+    public State(int score, Deque<Enemy> enemy, LinkedList<Hero> hero, Hero lastHero, List<Point> listPosOfBonus, boolean hasBomb, List<Bitmap> enemyPics, int countOfBitmaps) {
+        this.lastHero = lastHero.copy();
+        this.score = score;
+        for (Point p: listPosOfBonus){
+            listXofBonus.add(p.x);
+            listYofBonus.add(p.y);
+        }
+        this.hasBomb = hasBomb;
+
+        this.hero.addAll(hero);
         for (Enemy e : enemy) {
             shift.add(e.getShift());
             numFrame.add(e.getNumFrame());
+            step.add(e.getStep());
+            bmpIndex.add(e.getBmpIndex());
+            alpha.add(e.getAlpha());
 
             bmpHash.add(indexOfBitmap(countOfBitmaps, enemyPics, calculateBitmap(e.getFirstBitmap())));
         }
