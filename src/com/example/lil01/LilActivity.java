@@ -44,13 +44,19 @@ public class LilActivity extends Activity implements View.OnClickListener {
         helps.add(R.drawable.help4);
         helps.add(R.drawable.help5);
         helps.add(R.drawable.help6);
+        helps.add(R.drawable.help7);
+        helps.add(R.drawable.help8);
+        helps.add(R.drawable.help9);
 
-        helpTexts.add("You can draw heroes on window: 1) Select 'Body' if it was not selected. проверка переноста тест тест тетс прпрар впппы ппппы рррррыры ппапап рррккр рррра рррра рррра");
-        helpTexts.add("2) Draw body, head.\n");
-        helpTexts.add("3) Select 'Legs' and\ndraw legs, tails, wings.");
-        helpTexts.add("4) Press wizard button\nfor animate hero.");
-        helpTexts.add("5) Then draw and animate\nother hero.");
-        helpTexts.add("6) When all heroes is ready press Start button.\nPress Pause button for paused game");
+        helpTexts.add("1) You can draw your heroes");
+        helpTexts.add("2) Draw you hero");
+        helpTexts.add("3) Double tapped on the hero for animated it");
+        helpTexts.add("4) Wounded heroes can dissolved");
+        helpTexts.add("5) You can draw several heroes");
+        helpTexts.add("6) Gift bonus - bonus for copying last hero");
+        helpTexts.add("7) Tapped gift bonus for copy hero");
+        helpTexts.add("8) Bomb bonus kills all heroes and enemies on the screen");
+        helpTexts.add("9) Tapped bomb bonus for killing all characters");
 
 
         DisplayMetrics displaymetrics = new DisplayMetrics();
@@ -162,7 +168,7 @@ public class LilActivity extends Activity implements View.OnClickListener {
                 break;
             case R.id.nextBtn:
                 i = picNum.get();
-                if (i < 5) {
+                if (i < helps.size() - 1) {
                     i = picNum.incrementAndGet();
 
                     helpView.setBackgroundResource(helps.get(i));

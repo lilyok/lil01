@@ -477,7 +477,8 @@ class MyView extends View {
     public void setState(State st) {
         this.score = st.score;
         this.hasBomb = st.hasBomb;
-        this.lastHero = st.lastHero.copy();
+        if (st.lastHero != null)
+            this.lastHero = st.lastHero.copy();
         for (int i = 0; i < st.listXofBonus.size(); i++){
             listPosOfBonus.add(new Point(st.listXofBonus.get(i), st.listYofBonus.get(i)));
         }
@@ -541,7 +542,8 @@ class State implements Serializable {
     }
 
     public State(int score, Deque<Enemy> enemy, LinkedList<Hero> hero, Hero lastHero, List<Point> listPosOfBonus, boolean hasBomb, List<Bitmap> enemyPics, int countOfBitmaps) {
-        this.lastHero = lastHero.copy();
+        if (lastHero != null)
+            this.lastHero = lastHero.copy();
         this.score = score;
         for (Point p: listPosOfBonus){
             listXofBonus.add(p.x);
