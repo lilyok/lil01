@@ -5,7 +5,8 @@
               android:id="@+id/gl"
               android:visibility="visible"
               android:stretchColumns="0, 1, 2"
-              android:background="#150dff">
+              android:background="#150dff"
+              android:screenOrientation="landscape">
 
     <TableRow
         android:layout_width="fill_parent"

@@ -7,10 +7,6 @@ import java.util.List;
 public class Figure implements Serializable {
     private List<Point> fig;
 
-    public Figure() {
-        fig = new ArrayList<Point>();
-    }
-
     public Figure(Point p) {
         fig = new ArrayList<Point>();
         fig.add(p);

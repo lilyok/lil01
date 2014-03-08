@@ -9,7 +9,6 @@ import java.util.Random;
 public class Enemy extends Paint {
     private List<Bitmap> bitmaps = new ArrayList<Bitmap>();
     private int bmpIndex = 0;
-//    private Bitmap bmp;
     private int shift = 0;
     private int step = 0;
     private int numFrame = 0;
@@ -111,7 +110,6 @@ public class Enemy extends Paint {
         alpha -= 1;
         if (bmpIndex > bitmaps.size()/2)
             alpha -= 50;
-      //  if (alpha % 2 == 0)
             bmpIndex++;
     }
 

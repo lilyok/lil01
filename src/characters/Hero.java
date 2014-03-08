@@ -16,7 +16,6 @@ public class Hero implements Serializable{
     private int step = 0;
     private double phi = 0;
     private double dphi = 0.1;
-//    private Paint paint;
     private boolean isRight = true;
 
 
@@ -33,12 +32,6 @@ public class Hero implements Serializable{
 
     public Hero() {
         legs = new ArrayList<Figure>();
-//
-//        paint = new Paint();
-//        paint.setColor(Color.WHITE);
-//        paint.setAntiAlias(true);
-//        paint.setStyle(Paint.Style.FILL);
-//        paint.setStrokeWidth(5);
     }
 
     public Hero copy(){
@@ -171,10 +164,6 @@ public class Hero implements Serializable{
     public void setStep(int step){
         this.step = step;
     }
-
-//    public int getAlpha(){
-//        return alpha;
-//    }
 
     public void fill(int color){
 

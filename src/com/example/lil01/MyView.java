@@ -5,7 +5,7 @@ import android.graphics.*;
 import android.graphics.Point;
 import android.media.AudioManager;
 import android.media.SoundPool;
-import android.util.Log;
+//import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -13,7 +13,6 @@ import android.widget.Button;
 import android.widget.TextView;
 import characters.Enemy;
 import characters.Hero;
-import geometry.*;
 
 import java.io.Serializable;
 import java.util.*;
@@ -137,7 +136,7 @@ class MyView extends View {
         enemyPics.add(intToBmp(R.drawable.enemy3d));
 
 
-        int count = (int) Math.round(height / (double) enemySideLength);//bmp.getHeight());//3;//rnd.nextInt(height/(3*bmp.getHeight())-1)+1;
+        int count = (int) Math.round(height / (double) enemySideLength);
         for (int i = 0; i < count - 1; i++) {
             int typeOfDragon = rnd.nextInt(100) % 3;
             enemy.add(new Enemy(enemyPics.subList(typeOfDragon * countOfBitmaps, typeOfDragon * countOfBitmaps + countOfBitmaps)));
@@ -175,7 +174,7 @@ class MyView extends View {
         final float y = event.getY();
         switch (action) {
             case MotionEvent.ACTION_DOWN:
-                Log.i("MyTag", "ACTION_DOWN");
+                //Log.i("MyTag", "ACTION_DOWN");
                 indexOfBonus = indexOfBonusPoint(x, y);
                 if (indexOfBonus == -1) {
                     if (!isWizard)
@@ -187,7 +186,7 @@ class MyView extends View {
                 }
                 break;
             case MotionEvent.ACTION_MOVE:
-                Log.i("MyTag", "ACTION_MOVE");
+                //Log.i("MyTag", "ACTION_MOVE");
 
                 if (indexOfBonus == -1) {
                     if (!isWizard)
@@ -199,7 +198,7 @@ class MyView extends View {
                 }
                 break;
             case MotionEvent.ACTION_UP:
-                Log.i("MyTag", "ACTION_UP");
+                //Log.i("MyTag", "ACTION_UP");
                 if (indexOfBonus >= 0) {
                     sounds.play(sBoxOpened, 1.0f, 1.0f, 0, 0, 1.5f);
 
@@ -433,7 +432,7 @@ class MyView extends View {
             h.setStep(5);
             h.fill(Color.rgb((numOfHero % 3 + 1) * 89, (numOfHero % 2 + 1) * 78, numOfHero * 95));
             h.startAnimate();
-            Log.e("Vas", "before invalidate: " + Thread.currentThread().toString());
+            //Log.e("Vas", "before invalidate: " + Thread.currentThread().toString());
             invalidate();
         }
     }
@@ -464,10 +463,10 @@ class MyView extends View {
                 if (h.getBackend() < x && h.getFront() > x && h.getTop() < y && h.getBottom() > y) {
                     isWizard = false;
                     animateHero();
-                    Log.e("Vas", "on double tap: " + Thread.currentThread().toString());
+                    //Log.e("Vas", "on double tap: " + Thread.currentThread().toString());
                 }
 
-                Log.d("MyTag", "Double tapped at: (" + x + "," + y + ")");
+                //Log.d("MyTag", "Double tapped at: (" + x + "," + y + ")");
             }
             return true;
         }

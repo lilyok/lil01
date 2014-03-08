@@ -1,16 +1,12 @@
 package com.example.lil01;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.util.Log;
+//import android.util.Log;
 import android.view.*;
 import android.widget.*;
-import characters.Enemy;
 
 import static java.lang.Math.*;
 
@@ -48,15 +44,15 @@ public class LilActivity extends Activity implements View.OnClickListener {
         helps.add(R.drawable.help8);
         helps.add(R.drawable.help9);
 
-        helpTexts.add("1) You can draw your heroes");
-        helpTexts.add("2) Draw you hero");
-        helpTexts.add("3) Double tapped on the hero for animated it");
-        helpTexts.add("4) Wounded heroes can dissolved");
+        helpTexts.add("1) Press 'Start' for start game, press backspace button for exit");
+        helpTexts.add("2) Draw your hero");
+        helpTexts.add("3) Double-tap the hero to animate it");
+        helpTexts.add("4) When the hero gets wound it dissolves");
         helpTexts.add("5) You can draw several heroes");
-        helpTexts.add("6) Gift bonus - bonus for copying last hero");
-        helpTexts.add("7) Tapped gift bonus for copy hero");
-        helpTexts.add("8) Bomb bonus kills all heroes and enemies on the screen");
-        helpTexts.add("9) Tapped bomb bonus for killing all characters");
+        helpTexts.add("6) Gift-bonus - it is the bonus for copying last hero");
+        helpTexts.add("7) Tap gift-bonus to copy hero");
+        helpTexts.add("8) Bomb-bonus kills all heroes and enemies on the screen");
+        helpTexts.add("9) Tap the bomb-bonus to kill all characters");
 
 
         DisplayMetrics displaymetrics = new DisplayMetrics();
@@ -124,7 +120,6 @@ public class LilActivity extends Activity implements View.OnClickListener {
 
     public void helpBtnClick(final View view) {
         myview.doPause();
-        Toast.makeText(this, "тут будет справка", Toast.LENGTH_SHORT).show();
         picNum.set(0);
 
         helpDialog = new Dialog(this,android.R.style.Theme_Translucent);
@@ -224,7 +219,7 @@ public class LilActivity extends Activity implements View.OnClickListener {
             bw.write(currentScore);
             // закрываем поток
             bw.close();
-            Log.d("FileWriteLog", "Файл записан");
+            //Log.d("FileWriteLog", "Файл записан");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -256,47 +251,19 @@ public class LilActivity extends Activity implements View.OnClickListener {
         return -1;
     }
 
-
-//    @Override
-//    protected void onPause() {
-//        Log.d("cmd", "onPause");
-//
-//        super.onPause();
-//    }
-//
-//    @Override
-//    protected void onStop() {
-//        Log.d("cmd", "onStop");
-//
-//        super.onStop();
-//    }
-//
-//    @Override
-//    protected void onDestroy() {
-//
-//        Log.d("cmd", "onDestroy");
-//
-//        super.onDestroy();
-//    }
-//
-//    @Override
-//    protected void onStart() {
-//        Log.d("cmd", "onStart");
-//
-//        super.onStart();
-//    }
-
-//    @Override
-//    protected void onPostCreate(Bundle savedInstanceState) {
-//        Log.d("cmd", "onPostCreate");
-//
-//        super.onPostCreate(savedInstanceState);
-//    }
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (exitDialog != null) {
+            exitDialog.dismiss();
+            exitDialog = null;
+        }
+    }
 
     protected void onSaveInstanceState(Bundle outState) {
         outState.putSerializable("enemy", myview.getState());
         outState.putString("scoreString",score.getText().toString());
-        Log.d("cmd", "onSaveInstanceState");
+        //Log.d("cmd", "onSaveInstanceState");
         super.onSaveInstanceState(outState);
 
     }
@@ -305,7 +272,7 @@ public class LilActivity extends Activity implements View.OnClickListener {
         super.onRestoreInstanceState(savedInstanceState);
         myview.setState((State) savedInstanceState.getSerializable("enemy"));
         score.setText(savedInstanceState.getString("scoreString"));
-        Log.d("cmd", "onRestoreInstanceState");
+        //Log.d("cmd", "onRestoreInstanceState");
     }
 
 
