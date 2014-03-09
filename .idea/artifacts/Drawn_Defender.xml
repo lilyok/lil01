@@ -1,6 +1,6 @@
 <component name="ArtifactManager">
   <artifact type="apk" name="Drawn Defender">
-    <output-path>$PROJECT_DIR$/out/production/dd</output-path>
+    <output-path>$PROJECT_DIR$/out/production/lil01</output-path>
     <properties id="android-properties">
       <options>
         <option name="keyStoreUrl" value="file://" />

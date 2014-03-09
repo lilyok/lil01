@@ -205,7 +205,6 @@ public class LilActivity extends Activity implements View.OnClickListener {
         Integer currentScore = Integer.valueOf(score.getText().toString());
         if (currentScore > lastScore) {
             writeScore(currentScore.toString());
-            Toast.makeText(this, "Новый рекорд " + currentScore.toString(), Toast.LENGTH_SHORT).show();
         }
         return currentScore;
     }
