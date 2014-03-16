@@ -10,7 +10,7 @@
         android:id="@+id/btnreturn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="     Return to game     "
+        android:text="@string/returnToGameText"
         android:background="@drawable/btn"
         android:layout_below="@+id/linearLayout2"
         android:layout_marginTop="33dp"
@@ -43,7 +43,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/editText"
-                android:text="You killed "
+                android:text="@string/youKilledText"
                 android:textSize="24dp"
                 android:layout_alignParentTop="true"
                 android:layout_toLeftOf="@+id/killedEnemy"
@@ -63,13 +63,15 @@
                 android:editable="false"
                 android:textSize="24dp"
                 android:autoText="false"
-                android:background="#0d116c"/>
+                android:background="#0d116c"
+                android:paddingLeft="2dp"
+                android:paddingRight="2dp"/>
 
             <EditText
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/editText3"
-                android:text=" enemies"
+                android:text="@string/enemiesText"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentRight="true"
                 android:editable="false"
@@ -93,7 +95,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/editText6"
-                android:text="Current record "
+                android:text="@string/currentRecordText"
                 android:editable="false"
                 android:textSize="24dp"
                 android:textColor="#ffffff"
@@ -107,13 +109,15 @@
                 android:text=" 0 "
                 android:editable="false"
                 android:textColor="#ffa528"
-                android:background="#0d116c"/>
+                android:background="#0d116c"
+                android:paddingLeft="2dp"
+                android:paddingRight="2dp"/>
 
             <EditText
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/editText4"
-                android:text=" enemies"
+                android:text="@string/enemiesText"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentRight="true"
                 android:editable="false"

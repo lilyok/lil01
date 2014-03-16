@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Drawn Defender</string>
+    <string name="helpBtnText">Справка</string>
+    <string name="killedEnemiesText">Убито  врагов</string>
+    <string name="startBtnText">Пуск</string>
+    <string name="pauseBtnText">Пауза</string>
+    <string name="returnToGameText">     Вернуться в игру     </string>
+    <string name="youKilledText">Вы убили </string>
+    <string name="enemiesText"> врагов</string>
+    <string name="currentRecordText">Текущий рекорд </string>
+    <string name="cancelBtnText"> Отмена </string>
+    <string name="exitBtnText">Выход</string>
+    <string name="help1">1) Нажмите кнопку "Пуск", чтобы начать игру. Нажмите клавишу назад, чтобы выйти.</string>
+    <string name="help2">2) Нарисуйтк своего героя</string>
+    <string name="help3">3) Дважды кликните по нему, чтобы оживить</string>
+    <string name="help4">4) Получая раны, герой тает</string>
+    <string name="help5">5) Вы можете нарисовать несколько героев</string>
+    <string name="help6">6) Бонус "Подарок" позволяет скопировать последнего героя</string>
+    <string name="help7">7) Нажмите на бонус "Подарок", чтобы скопировать героя</string>
+    <string name="help8">8) Бонус "Бомба" убивает все живое на экране: и врагов, и героев</string>
+    <string name="help9">9) Кликните в лом месте экрана, чтобы взорвать "Бомбу" </string>
+</resources>

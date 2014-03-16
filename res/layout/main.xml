@@ -17,7 +17,7 @@
         <Button
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:text="Help"
+            android:text="@string/helpBtnText"
             android:id="@+id/helpBtn" android:layout_column="0"
             android:textSize="16dp"
             android:onClick="helpBtnClick" android:longClickable="true"
@@ -33,7 +33,7 @@
             <TextView
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:text="Killed enemies"
+                    android:text="@string/killedEnemiesText"
                     android:id="@+id/textView" android:gravity="center" android:textStyle="bold|normal"
                     android:textSize="17dp"
                     android:password="false"
@@ -50,7 +50,7 @@
         <Button
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:text="Start"
+                android:text="@string/startBtnText"
                 android:id="@+id/startBtn" android:onClick="startBtnClick"
                 android:enabled="true" android:visibility="visible" android:focusable="false"
                 android:layout_column="2"

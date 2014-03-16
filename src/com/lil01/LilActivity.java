@@ -44,15 +44,15 @@ public class LilActivity extends Activity implements View.OnClickListener {
         helps.add(R.drawable.help8);
         helps.add(R.drawable.help9);
 
-        helpTexts.add("1) Press 'Start' for start game, press backspace button for exit");
-        helpTexts.add("2) Draw your hero");
-        helpTexts.add("3) Double-tap the hero to animate it");
-        helpTexts.add("4) When the hero gets wound it dissolves");
-        helpTexts.add("5) You can draw several heroes");
-        helpTexts.add("6) Gift-bonus - it is the bonus for copying last hero");
-        helpTexts.add("7) Tap gift-bonus to copy hero");
-        helpTexts.add("8) Bomb-bonus kills all heroes and enemies on the screen");
-        helpTexts.add("9) Tap the bomb-bonus to kill all characters");
+        helpTexts.add(getResources().getString(R.string.help1));//"1) Press 'Start' for start game, press backspace button for exit");
+        helpTexts.add(getResources().getString(R.string.help2));
+        helpTexts.add(getResources().getString(R.string.help3));
+        helpTexts.add(getResources().getString(R.string.help4));
+        helpTexts.add(getResources().getString(R.string.help5));
+        helpTexts.add(getResources().getString(R.string.help6));
+        helpTexts.add(getResources().getString(R.string.help7));
+        helpTexts.add(getResources().getString(R.string.help8));
+        helpTexts.add(getResources().getString(R.string.help9));
 
 
         DisplayMetrics displaymetrics = new DisplayMetrics();
@@ -191,10 +191,10 @@ public class LilActivity extends Activity implements View.OnClickListener {
         Button button = (Button) view;
         CharSequence text = button.getText();
         int lastScore = readScore();
-        if ("Start".equals(text)) {
-            button.setText("Pause");
+        if (getResources().getString(R.string.startBtnText).equals(text)) {
+            button.setText(R.string.pauseBtnText);
         } else {
-            button.setText("Start");
+            button.setText(R.string.startBtnText);
             Integer currentScore = recalculateScore(lastScore);
             showResultDialog(currentScore, max(currentScore, lastScore));
         }

@@ -10,7 +10,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_alignParentTop="true"
-    android:text="My Custom Dialog"
+    android:text=""
     android:textAppearance="?android:attr/textAppearanceMedium"
     android:gravity="center"
     android:background="@drawable/board"
@@ -28,7 +28,7 @@
         android:id="@+id/btncancel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text=" Cancel "
+        android:text="@string/cancelBtnText"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:background="@drawable/btn"/>

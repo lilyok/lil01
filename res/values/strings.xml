@@ -1,4 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Drawn Defender</string>
+    <string name="helpBtnText">Help</string>
+    <string name="killedEnemiesText">Killed enemies</string>
+    <string name="startBtnText">Start</string>
+    <string name="pauseBtnText">Pause</string>
+    <string name="returnToGameText">     Return to game     </string>
+    <string name="youKilledText">You killed </string>
+    <string name="enemiesText"> enemies</string>
+    <string name="currentRecordText">Current record </string>
+    <string name="cancelBtnText"> Cancel </string>
+    <string name="exitBtnText">Exit</string>
+    <string name="help1">1) Press "Start" for start game, press backspace button for exit</string>
+    <string name="help2">2) Draw your hero</string>
+    <string name="help3">3) Double-tap the hero to animate it</string>
+    <string name="help4">4) When the hero gets wound it dissolves</string>
+    <string name="help5">5) You can draw several heroes</string>
+    <string name="help6">6) Gift-bonus - it is the bonus for copying last hero</string>
+    <string name="help7">7) Tap gift-bonus to copy hero</string>
+    <string name="help8">8) Bomb-bonus kills all heroes and enemies on the screen</string>
+    <string name="help9">9) Tap on the screen to kill all characters</string>
 </resources>
